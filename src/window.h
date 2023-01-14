@@ -18,6 +18,8 @@ class Window {
   }
 
  private:
+  void MousePress(SDL_MouseButtonEvent& event);
+
   bool is_open_{true};
   SDL_Window* window_{nullptr};
   SDL_Renderer* renderer_{nullptr};

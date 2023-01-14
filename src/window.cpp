@@ -24,7 +24,9 @@ bool Window::IsOpen() const {
 
 void Window::ProcessEvents() {
   SDL_Event event;
-  SDL_PollEvent(&event);
+  if (SDL_PollEvent(&event) == 0) {
+    return;
+  }
 
   switch (event.type) {
     case SDL_KEYDOWN:
@@ -38,6 +40,14 @@ void Window::ProcessEvents() {
     case SDL_QUIT:
       std::cout << "Quit\n";
       is_open_ = false;
+      break;
+
+    case SDL_MOUSEBUTTONDOWN:
+      MousePress(event.button);
+      break;
+
+    case SDL_MOUSEBUTTONUP:
+
       break;
 
     default:
@@ -59,4 +69,10 @@ void Window::Clear() {
 
 void Window::Display() {
   SDL_RenderPresent(renderer_);
+}
+
+void Window::MousePress(SDL_MouseButtonEvent& event) {
+  if (event.button == SDL_BUTTON_LEFT) {
+    std::cout << "Left press on : " << event.x << ", " << event.y << "\n";
+  }
 }
