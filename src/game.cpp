@@ -5,10 +5,14 @@
 
 #include <index_pos_conversion.h>
 
+#ifdef EMSCRIPTEN
+#include <emscripten.h>
+#endif
+
 Game::Game() {
-  texture_loader_.LoadTexture("commander", "/home/abrdej/Projects/Pigeonwar/pigeon-war-client/res/commander.png");
-  texture_loader_.LoadTexture("golem", "/home/abrdej/Projects/Pigeonwar/pigeon-war-client/res/golem.png");
-  texture_loader_.LoadTexture("grass", "/home/abrdej/Projects/Pigeonwar/pigeon-war-client/res/grass.png");
+  texture_loader_.LoadTexture("commander", "res/commander.png");
+  texture_loader_.LoadTexture("golem", "res/golem.png");
+  texture_loader_.LoadTexture("grass", "res/grass.png");
 
   board_ = std::make_unique<Board>(texture_loader_, 15, 10);
 
@@ -36,25 +40,36 @@ Game::Game() {
   std::cout << "handle2\n";
 }
 
+void LoopHandler(void* game) {
+  Game* this_game = reinterpret_cast<Game*>(game);
+  this_game->ExecuteLoop();
+}
+
 void Game::Run() {
-  auto last_time = std::chrono::system_clock::now();
-  std::chrono::milliseconds time_since_update(0);
-  std::chrono::milliseconds time_per_frame(100);
+  last_update_ = std::chrono::system_clock::now();
 
+#ifdef EMSCRIPTEN
+  emscripten_set_main_loop_arg(LoopHandler, this, 0, 1);
+#else
   while (window_.IsOpen()) {
-    window_.ProcessEvents();
-
-    auto now = std::chrono::system_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(now - last_time);
-    time_since_update += duration;
-    while (time_since_update > time_per_frame) {
-      last_time = now;
-      time_since_update -= time_per_frame;
-      window_.ProcessEvents();
-      Update(time_per_frame);
-    }
-    Render();
+    ExecuteLoop();
   }
+#endif
+}
+
+void Game::ExecuteLoop() {
+  window_.ProcessEvents();
+
+  auto now = std::chrono::system_clock::now();
+  auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(now - last_update_);
+  time_since_update_ += duration;
+  while (time_since_update_ > time_per_frame_) {
+    last_update_ = now;
+    time_since_update_ -= time_per_frame_;
+    window_.ProcessEvents();
+    Update(time_per_frame_);
+  }
+  Render();
 }
 
 void Game::Render() {

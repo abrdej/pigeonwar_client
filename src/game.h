@@ -13,10 +13,18 @@ class Game {
  public:
   Game();
   void Run();
+  bool Exit() {
+    return !window_.IsOpen();
+  }
+  void ExecuteLoop();
 
  private:
   void Render();
   void Update(std::chrono::milliseconds delta_time);
+
+  std::chrono::system_clock::time_point last_update_;
+  std::chrono::milliseconds time_since_update_{0};
+  std::chrono::milliseconds time_per_frame_{100};
 
   Window window_;
   TextureLoader texture_loader_{window_};
