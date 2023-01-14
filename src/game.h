@@ -5,6 +5,7 @@
 
 #include <window.h>
 #include <texture_loader.h>
+#include <entity.h>
 
 class Game {
  public:
@@ -17,5 +18,6 @@ class Game {
 
   Window window_;
   TextureLoader texture_loader_{window_};
-  std::shared_ptr<Texture> texture_;
+  std::shared_ptr<Entity> entity_;
+  std::shared_ptr<Entity> entity2_;
 };
