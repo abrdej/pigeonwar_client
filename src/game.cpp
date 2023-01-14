@@ -5,7 +5,16 @@
 
 Game::Game() {
   texture_loader_.LoadTexture("commander", "/home/abrdej/Projects/Pigeonwar/pigeon-war-client/res/commander.png");
-  texture_ = std::make_shared<Texture>(texture_loader_.GetTexture("commander"));
+  texture_loader_.LoadTexture("golem", "/home/abrdej/Projects/Pigeonwar/pigeon-war-client/res/golem.png");
+
+  EntityProperties entity_properties;
+  entity_properties.name = "commander";
+  entity_properties.index = 5;
+  entity_ = std::make_shared<Entity>(texture_loader_, entity_properties);
+
+  entity_properties.name = "golem";
+  entity_properties.index = 24;
+  entity2_ = std::make_shared<Entity>(texture_loader_, entity_properties);
 }
 
 void Game::Run() {
@@ -31,7 +40,8 @@ void Game::Run() {
 
 void Game::Render() {
   window_.Clear();
-  texture_->Draw(window_);
+  entity_->Draw(window_);
+  entity2_->Draw(window_);
   window_.Display();
 }
 

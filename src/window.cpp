@@ -8,7 +8,7 @@ Window::Window() {
   SDL_Init(SDL_INIT_VIDEO);
   IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG);
 
-  if (SDL_CreateWindowAndRenderer(640, 480, 0, &window_, &renderer_) != 0) {
+  if (SDL_CreateWindowAndRenderer(960, 640, 0, &window_, &renderer_) != 0) {
     throw std::runtime_error("Failed to create window and renderer");
   }
 }

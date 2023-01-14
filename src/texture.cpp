@@ -1,5 +1,6 @@
 #include <texture.h>
 
+#include <iostream>
 #include <string>
 #include <stdexcept>
 
@@ -24,6 +25,9 @@ void Texture::Draw(Window& window) {
 }
 
 void Texture::SetPos(int x, int y) {
+
+  std::cout << "Setting pos: " << x << ", " << y << "\n";
+
   rect_.x = x;
   rect_.y = y;
 }
