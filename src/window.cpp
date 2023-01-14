@@ -8,7 +8,7 @@ Window::Window() {
   SDL_Init(SDL_INIT_VIDEO);
   IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG);
 
-  if (SDL_CreateWindowAndRenderer(960, 640, 0, &window_, &renderer_) != 0) {
+  if (SDL_CreateWindowAndRenderer(900, 600, 0, &window_, &renderer_) != 0) {
     throw std::runtime_error("Failed to create window and renderer");
   }
 }
@@ -31,6 +31,14 @@ void Window::ProcessEvents() {
   switch (event.type) {
     case SDL_KEYDOWN:
       std::cout << "Key press detected\n";
+
+      switch (event.key.keysym.sym) {
+        case SDLK_ESCAPE:
+          std::cout << "ESCAPE\n";
+          is_open_ = false;
+          break;
+      }
+
       break;
 
     case SDL_KEYUP:
@@ -53,13 +61,6 @@ void Window::ProcessEvents() {
     default:
       break;
   }
-
-  switch (event.key.keysym.sym) {
-    case SDLK_ESCAPE:
-      std::cout << "ESCAPE\n";
-      is_open_ = false;
-      break;
-  }
 }
 
 void Window::Clear() {
@@ -74,5 +75,7 @@ void Window::Display() {
 void Window::MousePress(SDL_MouseButtonEvent& event) {
   if (event.button == SDL_BUTTON_LEFT) {
     std::cout << "Left press on : " << event.x << ", " << event.y << "\n";
+
+    on_mouse_press_(event.x, event.y);
   }
 }
