@@ -31,14 +31,8 @@ struct MoveAnimation {
     to_x = x;
     to_y = y;
 
-    std::cout << "To x: " << to_x << "\n";
-    std::cout << "To y: " << to_y << "\n";
-
     float from_x, from_y;
     entity.GetPos(from_x, from_y);
-
-    std::cout << "From x: " << from_x << "\n";
-    std::cout << "From y: " << from_y << "\n";
 
     auto distance = Distance(from_x, from_y, to_x, to_y);
 
@@ -49,9 +43,6 @@ struct MoveAnimation {
 
     delta_x = delta_x / distance;
     delta_y = delta_y / distance;
-
-    std::cout << "delta_x: " << delta_x << "\n";
-    std::cout << "delta_y: " << delta_y << "\n";
   }
 
   bool Update(std::chrono::milliseconds delta_time) {
@@ -60,11 +51,6 @@ struct MoveAnimation {
 
     auto pos_x = x + speed * delta_x * delta_time.count();
     auto pos_y = y + speed * delta_y * delta_time.count();
-
-    std::cout << "to_x: " << to_x << "\n";
-    std::cout << "to_y: " << to_y << "\n";
-    std::cout << "pos_x: " << pos_x << "\n";
-    std::cout << "pos_y: " << pos_y << "\n";
 
     if (std::abs(pos_x - to_x) < 2.5 && std::abs(pos_y - to_y) < 2.5) {
       entity_->SetPos(to_x, to_y);
