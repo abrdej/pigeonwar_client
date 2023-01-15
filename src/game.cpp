@@ -30,6 +30,9 @@ Game::Game() {
       std::int32_t index;
       PosToIndex(x, y, index);
       std::cout << "Clicked board on index: " << index << "\n";
+
+      // TODO: send message to server
+
     }
   });
 
@@ -81,9 +84,7 @@ void Game::Render() {
 }
 
 void Game::Update(std::chrono::milliseconds delta_time) {
-  std::cout << "Before update1\n";
   if (animation_ && animation_->Update(delta_time)) {
     animation_ = nullptr;
   }
-  std::cout << "Before update2\n";
 }

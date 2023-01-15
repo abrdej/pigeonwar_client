@@ -1,5 +1,3 @@
-#include <chrono>
-
 #include <game.h>
 
 int main() {
