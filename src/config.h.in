@@ -1,0 +1,5 @@
+#pragma once
+
+#include <string>
+
+static const std::string resources_directory = "@CMAKE_SOURCE_DIR@/res/";
