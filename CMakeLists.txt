@@ -8,6 +8,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 
+configure_file(src/config.h.in ${CMAKE_SOURCE_DIR}/src/config.h @ONLY)
+
 set(SOURCES src/main.cpp src/window.cpp src/texture.cpp src/game.cpp src/texture_loader.cpp
   src/entity.cpp src/board.cpp src/animation.cpp)
 if (EMSCRIPTEN)

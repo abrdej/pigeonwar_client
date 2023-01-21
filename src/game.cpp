@@ -10,9 +10,9 @@
 #endif
 
 Game::Game() {
-  texture_loader_.LoadTexture("commander", "res/commander.png");
-  texture_loader_.LoadTexture("golem", "res/golem.png");
-  texture_loader_.LoadTexture("grass", "res/grass.png");
+  texture_loader_.LoadTexture("commander");
+  texture_loader_.LoadTexture("golem");
+  texture_loader_.LoadTexture("grass");
 
   board_ = std::make_unique<Board>(texture_loader_, 15, 10);
 
