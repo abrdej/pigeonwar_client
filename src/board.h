@@ -9,8 +9,8 @@
 class Board {
  public:
   Board(TextureLoader& texture_loader, int cols, int rows) : cols_(cols), rows_(rows) {
-    for (int r = 0; r < rows_; r++) {
-      for (int c = 0; c < cols_; c++) {
+    for (int r = 0; r < rows_; ++r) {
+      for (int c = 0; c < cols_; ++c) {
         fields_.push_back(texture_loader.GetTexture("grass"));
         fields_.back().SetPos(c * 60, r * 60);
       }

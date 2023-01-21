@@ -8,7 +8,7 @@ Window::Window() {
   SDL_Init(SDL_INIT_VIDEO);
   IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG);
 
-  if (SDL_CreateWindowAndRenderer(900, 600, 0, &window_, &renderer_) != 0) {
+  if (SDL_CreateWindowAndRenderer(900, 700, 0, &window_, &renderer_) != 0) {
     throw std::runtime_error("Failed to create window and renderer");
   }
 }
@@ -58,13 +58,17 @@ void Window::ProcessEvents() {
 
       break;
 
+    case SDL_MOUSEMOTION:
+      MouseMove(event.motion);
+      break;
+
     default:
       break;
   }
 }
 
 void Window::Clear() {
-  SDL_SetRenderDrawColor(renderer_, 255, 255, 255, 255);
+  SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255);
   SDL_RenderClear(renderer_);
 }
 
@@ -78,4 +82,8 @@ void Window::MousePress(SDL_MouseButtonEvent& event) {
 
     on_mouse_press_(event.x, event.y);
   }
+}
+
+void Window::MouseMove(SDL_MouseMotionEvent& event) {
+  on_mouse_move_(event.x, event.y);
 }

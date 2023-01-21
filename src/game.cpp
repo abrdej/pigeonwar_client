@@ -13,9 +13,10 @@ Game::Game() {
   texture_loader_.LoadTexture("commander");
   texture_loader_.LoadTexture("golem");
   texture_loader_.LoadTexture("grass");
+  texture_loader_.LoadTexture("border");
 
   board_ = std::make_unique<Board>(texture_loader_, 15, 10);
-
+  panel_ = std::make_unique<Panel>(texture_loader_, 150, 10 * 60 + 10, 10);
   EntityProperties entity_properties;
   entity_properties.name = "commander";
   entity_properties.index = 5;
@@ -33,7 +34,15 @@ Game::Game() {
 
       // TODO: send message to server
 
+    } else if (panel_->Clicked(x, y)) {
+      std::cout << "Panel clicked\n";
     }
+
+    panel_->InteractPress(x, y);
+  });
+
+  window_.OnMouseMove([this](int x, int y) {
+    panel_->InteractMove(x, y);
   });
 
   animation_ = std::make_unique<MoveAnimation>();
@@ -78,6 +87,7 @@ void Game::ExecuteLoop() {
 void Game::Render() {
   window_.Clear();
   board_->Draw(window_);
+  panel_->Draw(window_);
   entity_->Draw(window_);
   entity2_->Draw(window_);
   window_.Display();
