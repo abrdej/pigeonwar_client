@@ -7,6 +7,7 @@
 #include <texture_loader.h>
 #include <entity.h>
 #include <board.h>
+#include <panel.h>
 #include <animation.h>
 
 class Game {
@@ -31,6 +32,7 @@ class Game {
   std::shared_ptr<Entity> entity_;
   std::shared_ptr<Entity> entity2_;
   std::unique_ptr<Board> board_;
+  std::unique_ptr<Panel> panel_;
 
   std::unique_ptr<MoveAnimation> animation_;
 };

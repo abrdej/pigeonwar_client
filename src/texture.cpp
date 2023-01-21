@@ -9,6 +9,7 @@
 Texture::Texture(Window& window, const std::string &texture_file) {
   SDL_Surface *image = IMG_Load(texture_file.c_str());
   if (!image) {
+    std::cout << "No texture: " << texture_file << "\n";
     throw std::runtime_error("Texture: " + std::string(IMG_GetError()));
   }
   texture_ = SDL_CreateTextureFromSurface(window.GetRenderer(), image);
@@ -24,11 +25,18 @@ Texture::Texture(Window& window, const std::string &texture_file) {
 }
 
 void Texture::Draw(Window& window) {
-//  SDL_RenderCopy(window.GetRenderer(), texture_, nullptr, &rect_);
+  const float rect_w_scaled_margin = (scaling_factor_ * rect_.w - rect_.w) / 2;
+  const float rect_h_scaled_margin = (scaling_factor_ * rect_.h - rect_.h) / 2;
+
+  SDL_Rect scaled_rect{static_cast<int>(rect_.x - rect_w_scaled_margin),
+                       static_cast<int>(rect_.y - rect_h_scaled_margin),
+                       static_cast<int>(rect_.w + 2 * rect_w_scaled_margin),
+                       static_cast<int>(rect_.h + 2 * rect_h_scaled_margin)};
+
   SDL_RenderCopyEx(window.GetRenderer(),
                    texture_,
                    nullptr,
-                   &rect_,
+                   &scaled_rect,
                    0.0,
                    &center_,
                    flipped_ ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
@@ -46,4 +54,8 @@ void Texture::GetPos(int& x, int& y) {
 
 void Texture::Flip(bool flipped) {
   flipped_ = flipped;
+}
+
+void Texture::Scale(float factor) {
+  scaling_factor_ = factor;
 }

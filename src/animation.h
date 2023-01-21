@@ -19,7 +19,7 @@ struct MoveAnimation {
   float to_x;
   float to_y;
 
-  float speed = 0.1;
+  float speed = 0.01; // TODO: depending on the speed this is different - fix it
 
   Entity* entity_{nullptr};
 

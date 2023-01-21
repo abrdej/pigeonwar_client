@@ -13,10 +13,12 @@ class Texture {
   void SetPos(int x, int y);
   void GetPos(int& x, int& y);
   void Flip(bool flipped);
+  void Scale(float factor);
 
  private:
   SDL_Rect rect_;
   SDL_Point center_;
   SDL_Texture *texture_;
   bool flipped_{false};
+  float scaling_factor_{1.f};
 };
