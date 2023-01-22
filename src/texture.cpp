@@ -59,3 +59,7 @@ void Texture::Flip(bool flipped) {
 void Texture::Scale(float factor) {
   scaling_factor_ = factor;
 }
+
+void Texture::SetTransparency(std::uint8_t alpha) {
+  SDL_SetTextureAlphaMod(texture_, alpha);
+}

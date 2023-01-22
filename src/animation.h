@@ -1,6 +1,7 @@
 #pragma once
 
 #include <chrono>
+#include <cstdint>
 
 #include <entity.h>
 #include <iostream>
@@ -60,4 +61,63 @@ struct MoveAnimation {
       return false;
     }
   }
+};
+
+struct ScaleAnimation {
+  void Handle(Entity& entity) {
+    entity_ = &entity;
+  }
+
+  bool Update(std::chrono::milliseconds delta_time) {
+    update_delta_time_ += delta_time;
+    if (update_delta_time_ >= update_period_) {
+      update_delta_time_ -= update_period_;
+      current_scale_ += scaling_speed_;
+      entity_->Scale(current_scale_);
+      if (current_scale_ >= 1.3) {
+        scaling_speed_ = -0.001f;
+        return false;
+      }
+      if (current_scale_ <= 1.f) {
+        entity_->Scale(1.f);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  Entity* entity_{nullptr};
+  float current_scale_{1.f};
+  float scaling_speed_{0.001f};
+  std::chrono::milliseconds update_delta_time_;
+  std::chrono::milliseconds update_period_{100};
+};
+
+struct TransparencyAnimation {
+  void Handle(Entity& entity) {
+    entity_ = &entity;
+  }
+
+  bool Update(std::chrono::milliseconds delta_time) {
+    update_delta_time_ += delta_time;
+    if (update_delta_time_ >= update_period_) {
+      update_delta_time_ -= update_period_;
+      current_alpha_ += alpha_step_;
+      entity_->SetTransparency(current_alpha_);
+      if (current_alpha_ == 0) {
+        alpha_step_ = 1;
+        return false;
+      }
+      if (current_alpha_ == 255) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  Entity* entity_{nullptr};
+  std::uint8_t current_alpha_{255};
+  std::int8_t alpha_step_{-1};
+  std::chrono::milliseconds update_delta_time_;
+  std::chrono::milliseconds update_period_{100};
 };

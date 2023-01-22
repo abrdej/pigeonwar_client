@@ -54,6 +54,12 @@ Game::Game() {
   std::cout << "handle\n";
   animation_->Handle(*entity_);
   std::cout << "handle2\n";
+
+  scale_animation_ = std::make_unique<ScaleAnimation>();
+  scale_animation_->Handle(*entity2_);
+
+  transparency_animation_ = std::make_unique<TransparencyAnimation>();
+  transparency_animation_->Handle(*entity2_);
 }
 
 void LoopHandler(void* game) {
@@ -101,5 +107,11 @@ void Game::Render() {
 void Game::Update(std::chrono::milliseconds delta_time) {
   if (animation_ && animation_->Update(delta_time)) {
     animation_ = nullptr;
+  }
+  if (scale_animation_ && scale_animation_->Update(delta_time)) {
+    scale_animation_ = nullptr;
+  }
+  if (transparency_animation_ && transparency_animation_->Update(delta_time)) {
+    transparency_animation_ = nullptr;
   }
 }
