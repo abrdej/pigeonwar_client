@@ -6,6 +6,7 @@
 #include <texture.h>
 #include <texture_loader.h>
 #include <index_pos_conversion.h>
+#include <text.h>
 
 struct EntityProperties {
   std::string name;
@@ -16,7 +17,7 @@ struct EntityProperties {
 
 class Entity {
  public:
-  Entity(TextureLoader& texture_loader, const EntityProperties& entity_properties) {
+  Entity(SDL_Renderer* renderer, TextureLoader& texture_loader, const EntityProperties& entity_properties) {
     // 1. Set fields
 
     // 2. Create sprite: set pos and texture key
@@ -27,13 +28,19 @@ class Entity {
 
     x_ = x;
     y_ = y;
+
+    health_text_ = std::make_unique<Text>(renderer, 24);
+    health_text_->SetText(std::to_string(health_));
+    health_text_->SetColor(SDL_Color{20, 35, 60});
+    UpdateHealthPos();
   }
 
   void Draw(Window& window) {
     // Draw sprite
     texture_->Draw(window);
-
     // Draw health
+    health_text_->Draw(window);
+
     // Draw power
   }
 
@@ -58,6 +65,7 @@ class Entity {
     x_ = x;
     y_ = y;
     texture_->SetPos(x_, y_);
+    UpdateHealthPos();
   }
 
   [[nodiscard]] std::string GetName() const {
@@ -65,10 +73,14 @@ class Entity {
   }
 
  private:
+  void UpdateHealthPos() {
+    health_text_->SetCenterPosX(x_ + 30, y_ + 30 - 55);
+  }
+
   std::int32_t player_id_;
   std::int32_t index_;
   std::string name_;
-  std::int32_t health_;
+  std::int32_t health_{50};
   std::int32_t power_;
   std::int32_t pos_x_;
   std::int32_t pox_y_;
@@ -78,4 +90,5 @@ class Entity {
   float y_;
 
   std::unique_ptr<Texture> texture_;
+  std::unique_ptr<Text> health_text_;
 };
