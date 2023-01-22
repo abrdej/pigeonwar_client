@@ -20,15 +20,15 @@ Game::Game() {
   EntityProperties entity_properties;
   entity_properties.name = "commander";
   entity_properties.index = 5;
-  entity_ = std::make_shared<Entity>(texture_loader_, entity_properties);
+  entity_ = std::make_shared<Entity>(window_.GetRenderer(), texture_loader_, entity_properties);
 
-  text_ = std::make_unique<Text>(window_.GetRenderer());
+  text_ = std::make_unique<Text>(window_.GetRenderer(), 36);
   text_->SetPos(50, 400);
   text_->SetText("Hello text");
 
   entity_properties.name = "golem";
   entity_properties.index = 24;
-  entity2_ = std::make_shared<Entity>(texture_loader_, entity_properties);
+  entity2_ = std::make_shared<Entity>(window_.GetRenderer(), texture_loader_, entity_properties);
 
   window_.OnMousePressed([this](int x, int y) {
     if (board_->Clicked(x, y)) {
