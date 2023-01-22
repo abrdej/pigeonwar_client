@@ -3,10 +3,12 @@
 #include <iostream>
 
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
 Window::Window() {
   SDL_Init(SDL_INIT_VIDEO);
   IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG);
+  TTF_Init();
 
   if (SDL_CreateWindowAndRenderer(900, 700, 0, &window_, &renderer_) != 0) {
     throw std::runtime_error("Failed to create window and renderer");

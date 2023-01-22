@@ -9,6 +9,7 @@
 #include <board.h>
 #include <panel.h>
 #include <animation.h>
+#include <text.h>
 
 class Game {
  public:
@@ -33,6 +34,7 @@ class Game {
   std::shared_ptr<Entity> entity2_;
   std::unique_ptr<Board> board_;
   std::unique_ptr<Panel> panel_;
+  std::unique_ptr<Text> text_;
 
   std::unique_ptr<MoveAnimation> animation_;
 };
