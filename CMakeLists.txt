@@ -7,19 +7,22 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
+if (NOT EMSCRIPTEN)
+  find_package(SDL2TTF REQUIRED)
+endif ()
 
 configure_file(src/config.h.in ${CMAKE_SOURCE_DIR}/src/config.h @ONLY)
 
 set(SOURCES src/main.cpp src/window.cpp src/texture.cpp src/game.cpp src/texture_loader.cpp
-  src/entity.cpp src/board.cpp src/animation.cpp)
+  src/entity.cpp src/board.cpp src/animation.cpp src/text.cpp)
 #if (EMSCRIPTEN)
 #  list(APPEND SOURCES src/websocket_client.cpp)
 #endif ()
 
 add_executable(pigeon_war_client ${SOURCES})
 if (NOT EMSCRIPTEN)
-  target_include_directories(pigeon_war_client PUBLIC ${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS})
-  target_link_libraries(pigeon_war_client ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})
+  target_include_directories(pigeon_war_client PUBLIC ${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS} ${SDL2TTF_INCLUDE_DIR})
+  target_link_libraries(pigeon_war_client ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} ${SDL2TTF_LIBRARY})
 endif ()
 
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE src)
@@ -30,6 +33,7 @@ if (EMSCRIPTEN)
 
   target_compile_options(pigeon_war_client PUBLIC -sUSE_SDL=2)
   target_compile_options(pigeon_war_client PUBLIC -sUSE_SDL_IMAGE=2)
+  target_compile_options(pigeon_war_client PUBLIC -sUSE_SDL_TTF=2)
   target_compile_options(pigeon_war_client PUBLIC -sUSE_ZLIB=1)
   target_compile_options(pigeon_war_client PUBLIC -sUSE_LIBPNG=1)
   target_compile_options(pigeon_war_client PUBLIC -sUSE_LIBJPEG=1)
@@ -39,6 +43,7 @@ if (EMSCRIPTEN)
 
   target_link_options(pigeon_war_client PUBLIC -sUSE_SDL=2)
   target_link_options(pigeon_war_client PUBLIC -sUSE_SDL_IMAGE=2)
+  target_link_options(pigeon_war_client PUBLIC -sUSE_SDL_TTF=2)
   target_link_options(pigeon_war_client PUBLIC -sUSE_ZLIB=1)
   target_link_options(pigeon_war_client PUBLIC -sUSE_LIBPNG=1)
   target_link_options(pigeon_war_client PUBLIC -sUSE_LIBJPEG=1)
