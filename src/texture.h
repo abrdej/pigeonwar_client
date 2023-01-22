@@ -14,6 +14,7 @@ class Texture {
   void GetPos(int& x, int& y);
   void Flip(bool flipped);
   void Scale(float factor);
+  void SetTransparency(std::uint8_t alpha);
 
  private:
   SDL_Rect rect_;

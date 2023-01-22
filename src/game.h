@@ -37,4 +37,6 @@ class Game {
   std::unique_ptr<Text> text_;
 
   std::unique_ptr<MoveAnimation> animation_;
+  std::unique_ptr<ScaleAnimation> scale_animation_;
+  std::unique_ptr<TransparencyAnimation> transparency_animation_;
 };

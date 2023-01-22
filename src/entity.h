@@ -68,6 +68,14 @@ class Entity {
     UpdateHealthPos();
   }
 
+  void Scale(float factor) {
+    texture_->Scale(factor);
+  }
+
+  void SetTransparency(std::uint8_t alpha) {
+    texture_->SetTransparency(alpha);
+  }
+
   [[nodiscard]] std::string GetName() const {
     return name_;
   }
