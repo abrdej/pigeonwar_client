@@ -42,6 +42,8 @@ Game::Game() {
 
     } else if (panel_->Clicked(x, y)) {
       std::cout << "Panel clicked\n";
+
+      // TODO: send message to server
     }
 
     panel_->InteractPress(x, y);
@@ -64,10 +66,12 @@ Game::Game() {
   transparency_animation_->Handle(*entity2_);
 }
 
+#ifdef EMSCRIPTEN
 void LoopHandler(void* game) {
   Game* this_game = reinterpret_cast<Game*>(game);
   this_game->ExecuteLoop();
 }
+#endif
 
 void Game::Run() {
   last_update_ = std::chrono::system_clock::now();
