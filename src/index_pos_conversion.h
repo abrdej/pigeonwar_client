@@ -2,13 +2,12 @@
 
 #include <cstdint>
 
-inline void IndexToPos(std::int32_t index, int& x, int& y) {
+inline std::pair<int, int> IndexToPos(std::int32_t index) {
   int col = index % 15;
   int row = index / 15;
-  x = col * 60;
-  y = row * 60;
+  return {col * 60, row * 60};
 }
 
-inline void PosToIndex(int x, int y, std::int32_t& index) {
-  index = (y / 60) * 15 + (x / 60);
+inline std::int32_t PosToIndex(int x, int y) {
+  return (y / 60) * 15 + (x / 60);
 }

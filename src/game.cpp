@@ -32,8 +32,7 @@ Game::Game() {
 
   window_.OnMousePressed([this](int x, int y) {
     if (board_->Clicked(x, y)) {
-      std::int32_t index;
-      PosToIndex(x, y, index);
+      std::int32_t index = PosToIndex(x, y);
       std::cout << "Clicked board on index: " << index << "\n";
 
       // TODO: send message to server

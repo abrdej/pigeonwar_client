@@ -47,9 +47,8 @@ void Texture::SetPos(int x, int y) {
   rect_.y = y;
 }
 
-void Texture::GetPos(int& x, int& y) {
-  x = rect_.x;
-  y = rect_.y;
+std::pair<int, int> Texture::GetPos() const {
+  return {rect_.x, rect_.y};
 }
 
 void Texture::Flip(bool flipped) {

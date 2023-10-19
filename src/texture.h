@@ -11,7 +11,7 @@ class Texture {
   explicit Texture(Window& window, const std::string &texture_file);
   void Draw(Window& window);
   void SetPos(int x, int y);
-  void GetPos(int& x, int& y);
+  std::pair<int, int> GetPos() const;
   void Flip(bool flipped);
   void Scale(float factor);
   void SetTransparency(std::uint8_t alpha);
