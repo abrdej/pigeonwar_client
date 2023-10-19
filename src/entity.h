@@ -17,32 +17,11 @@ struct EntityProperties {
 
 class Entity {
  public:
-  Entity(SDL_Renderer* renderer, TextureLoader& texture_loader, const EntityProperties& entity_properties) {
-    // 1. Set fields
+  Entity(SDL_Renderer* renderer, TextureLoader& texture_loader, const EntityProperties& entity_properties);
 
-    // 2. Create sprite: set pos and texture key
-    texture_ = std::make_unique<Texture>(texture_loader.GetTexture(entity_properties.name));
-    std::tie(x_, y_) = IndexToPos(entity_properties.index);
-    texture_->SetPos(x_, y_);
+  void Draw(Window& window);
 
-    health_text_ = std::make_unique<Text>(renderer, 24);
-    health_text_->SetText(std::to_string(health_));
-    health_text_->SetColor(SDL_Color{20, 35, 60});
-    UpdateHealthPos();
-  }
-
-  void Draw(Window& window) {
-    // Draw sprite
-    texture_->Draw(window);
-    // Draw health
-    health_text_->Draw(window);
-
-    // Draw power
-  }
-
-  void Flip(bool flip) {
-    texture_->Flip(flip);
-  }
+  void Flip(bool flip);
 
 //  void SetHealth(std::int32_t health);
 //  void ChangeHealth(std::int32_t amount);
@@ -52,33 +31,18 @@ class Entity {
 //  void SetPosition(std::int32_t x, std::int32_t y);
 //  void SetPlayer(std::int32_t player_id);
 
-  std::pair<float, float> GetPos() const {
-    return {x_, y_};
-  }
+  std::pair<float, float> GetPos() const;
 
-  void SetPos(float x, float y) {
-    x_ = x;
-    y_ = y;
-    texture_->SetPos(x_, y_);
-    UpdateHealthPos();
-  }
+  void SetPos(float x, float y);
 
-  void Scale(float factor) {
-    texture_->Scale(factor);
-  }
+  void Scale(float factor);
 
-  void SetTransparency(std::uint8_t alpha) {
-    texture_->SetTransparency(alpha);
-  }
+  void SetTransparency(std::uint8_t alpha);
 
-  [[nodiscard]] std::string GetName() const {
-    return name_;
-  }
+  [[nodiscard]] std::string GetName() const;
 
  private:
-  void UpdateHealthPos() {
-    health_text_->SetCenterPosX(x_ + 30, y_ + 30 - 55);
-  }
+  void UpdateHealthPos();
 
   std::int32_t player_id_;
   std::int32_t index_;
