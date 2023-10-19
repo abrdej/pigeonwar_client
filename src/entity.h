@@ -8,11 +8,15 @@
 #include <index_pos_conversion.h>
 #include <text.h>
 
+static constexpr auto no_health = std::numeric_limits<std::int32_t>::max();
+static constexpr auto no_power = std::numeric_limits<std::int32_t>::max();
+static constexpr auto no_index = std::numeric_limits<std::int32_t>::max();
+
 struct EntityProperties {
   std::string name;
-  std::int32_t health;
-  std::int32_t power;
-  std::int32_t index;
+  std::int32_t health{no_health};
+  std::int32_t power{no_power};
+  std::int32_t index{no_index};
 };
 
 class Entity {
@@ -43,19 +47,19 @@ class Entity {
 
  private:
   void UpdateHealthPos();
+  void UpdatePowerPos();
 
-  std::int32_t player_id_;
-  std::int32_t index_;
-  std::string name_;
-  std::int32_t health_{50};
-  std::int32_t power_;
-  std::int32_t pos_x_;
-  std::int32_t pox_y_;
-  bool is_tweening_;
+  EntityProperties entity_properties_;
 
-  float x_;
-  float y_;
+  float x_{0.f};
+  float y_{0.f};
+
+  std::int32_t player_id_{0};
+  std::int32_t pos_x_{0};
+  std::int32_t pox_y_{0};
+  bool is_tweening_{false};
 
   std::unique_ptr<Texture> texture_;
   std::unique_ptr<Text> health_text_;
+  std::unique_ptr<Text> power_text_;
 };
