@@ -1,6 +1,16 @@
 #include <entity.h>
 
-Entity::Entity(SDL_Renderer* renderer, TextureLoader& texture_loader, const EntityProperties& entity_properties) {
+// TODO: configure:
+// - health text color
+// - health text font size
+// - health text pos offset
+// - power text color
+// - power text font size
+// - power text pos offset
+
+
+Entity::Entity(SDL_Renderer* renderer, TextureLoader& texture_loader, const EntityProperties& entity_properties)
+    : entity_properties_(entity_properties) {
 // 1. Set fields
 
 // 2. Create sprite: set pos and texture key
@@ -8,19 +18,33 @@ Entity::Entity(SDL_Renderer* renderer, TextureLoader& texture_loader, const Enti
   std::tie(x_, y_) = IndexToPos(entity_properties.index);
   texture_->SetPos(x_, y_);
 
-  health_text_ = std::make_unique<Text>(renderer, 24);
-  health_text_->SetText(std::to_string(health_));
-  health_text_->SetColor(SDL_Color{20, 35, 60});
-  UpdateHealthPos();
+  if (entity_properties_.health != no_health) {
+    health_text_ = std::make_unique<Text>(renderer, 24);
+    health_text_->SetText(std::to_string(entity_properties_.health));
+    health_text_->SetColor(SDL_Color{20, 35, 60});
+    UpdateHealthPos();
+  }
+
+  // TODO: do we want to draw power?
+//  if (entity_properties_.power != no_power) {
+//    power_text_ = std::make_unique<Text>(renderer, 24);
+//    power_text_->SetText(std::to_string(entity_properties_.power));
+//    power_text_->SetColor(SDL_Color{60, 35, 20});
+//    UpdatePowerPos();
+//  }
 }
 
 void Entity::Draw(Window& window) {
   // Draw sprite
   texture_->Draw(window);
   // Draw health
-  health_text_->Draw(window);
-
+  if (health_text_) {
+    health_text_->Draw(window);
+  }
   // Draw power
+//  if (power_text_) {
+//    power_text_->Draw(window);
+//  }
 }
 
 void Entity::Flip(bool flip) {
@@ -36,6 +60,7 @@ void Entity::SetPos(float x, float y) {
   y_ = y;
   texture_->SetPos(x_, y_);
   UpdateHealthPos();
+  UpdatePowerPos();
 }
 
 void Entity::Scale(float factor) {
@@ -47,9 +72,17 @@ void Entity::SetTransparency(std::uint8_t alpha) {
 }
 
 std::string Entity::GetName() const {
-  return name_;
+  return entity_properties_.name;
 }
 
 void Entity::UpdateHealthPos() {
-  health_text_->SetCenterPosX(x_ + 30, y_ + 30 - 55);
+  if (health_text_) {
+    health_text_->SetCenterPosX(x_ + 30, y_ + 30 - 55);
+  }
+}
+
+void Entity::UpdatePowerPos() {
+//  if (power_text_) {
+//    power_text_->SetCenterPosX(x_ + 30, y_ + 30 - 55);
+//  }
 }
