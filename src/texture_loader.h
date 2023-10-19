@@ -9,7 +9,7 @@ class Window;
 
 class TextureLoader {
  public:
-   explicit TextureLoader(Window& window);
+  explicit TextureLoader(Window& window);
 
   Texture GetTexture(const std::string& texture_key);
 

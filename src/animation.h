@@ -27,13 +27,9 @@ struct MoveAnimation {
   void Handle(Entity& entity) {
     entity_ = &entity;
 
-    int x, y;
-    IndexToPos(to_index, x, y);
-    to_x = x;
-    to_y = y;
+    std::tie(to_x, to_y) = IndexToPos(to_index);
 
-    float from_x, from_y;
-    entity.GetPos(from_x, from_y);
+    auto [from_x, from_y] = entity.GetPos();
 
     auto distance = Distance(from_x, from_y, to_x, to_y);
 
@@ -47,8 +43,7 @@ struct MoveAnimation {
   }
 
   bool Update(std::chrono::milliseconds delta_time) {
-    float x, y;
-    entity_->GetPos(x, y);
+    auto [x, y] = entity_->GetPos();
 
     auto pos_x = x + speed * delta_x * delta_time.count();
     auto pos_y = y + speed * delta_y * delta_time.count();

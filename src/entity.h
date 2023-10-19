@@ -22,12 +22,8 @@ class Entity {
 
     // 2. Create sprite: set pos and texture key
     texture_ = std::make_unique<Texture>(texture_loader.GetTexture(entity_properties.name));
-    int x, y;
-    IndexToPos(entity_properties.index, x, y);
-    texture_->SetPos(x, y);
-
-    x_ = x;
-    y_ = y;
+    std::tie(x_, y_) = IndexToPos(entity_properties.index);
+    texture_->SetPos(x_, y_);
 
     health_text_ = std::make_unique<Text>(renderer, 24);
     health_text_->SetText(std::to_string(health_));
@@ -56,9 +52,8 @@ class Entity {
 //  void SetPosition(std::int32_t x, std::int32_t y);
 //  void SetPlayer(std::int32_t player_id);
 
-  void GetPos(float& x, float& y) {
-    x = x_;
-    y = y_;
+  std::pair<float, float> GetPos() const {
+    return {x_, y_};
   }
 
   void SetPos(float x, float y) {
