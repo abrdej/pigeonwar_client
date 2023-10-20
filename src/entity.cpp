@@ -22,6 +22,8 @@ Entity::Entity(Renderer renderer, TextureLoader& texture_loader, const EntityPro
     health_text_ = std::make_unique<Text>(renderer, 24);
     health_text_->SetText(std::to_string(entity_properties_.health));
     health_text_->SetColor(SDL_Color{20, 35, 60});
+    health_text_->DrawBackground(true);
+    health_text_->SetBackgroundColor(SDL_Color{141, 166, 146, 25});
     UpdateHealthPos();
   }
 
