@@ -10,7 +10,8 @@ class TextureLoader;
 
 class Panel {
  public:
-  Panel(Renderer renderer, TextureLoader& texture_loader, int pos_x, int pos_y, int number_of_buttons);
+  Panel(Renderer renderer, TextureLoader& texture_loader, int pos_x, int pos_y, int number_of_buttons,
+        int number_of_effects);
 
   void Draw(Window& window);
 
@@ -29,9 +30,7 @@ class Panel {
   int pos_x_{0};
   int pos_y_{0};
 
-  // Icon of the currently selected entity
-  // His stats
-  // His name
+  std::unique_ptr<Texture> background_;
 
   std::unique_ptr<Button> entity_button_;
   std::unique_ptr<Text> entity_name_;

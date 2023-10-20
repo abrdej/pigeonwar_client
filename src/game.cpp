@@ -15,9 +15,10 @@ Game::Game() {
   texture_loader_.LoadTexture("grass");
   texture_loader_.LoadTexture("border");
   texture_loader_.LoadTexture("end_turn");
+  texture_loader_.LoadTexture("panel_background");
 
   board_ = std::make_unique<Board>(texture_loader_, 15, 10);
-  panel_ = std::make_unique<Panel>(window_.GetRenderer(), texture_loader_, 150, 10 * 60 + 10, 4);
+  panel_ = std::make_unique<Panel>(window_.GetRenderer(), texture_loader_, 150, 10 * 60, 4, 5);
   EntityProperties entity_properties;
   entity_properties.name = "commander";
   entity_properties.index = 5;
