@@ -14,11 +14,11 @@ class Button {
 
   void Draw(Window& window);
 
-  void OnIn(const std::function<void()>& callback);
+  void OnIn(const std::function<void(Button&)>& callback);
 
-  void OnOut(const std::function<void()>& callback);
+  void OnOut(const std::function<void(Button&)>& callback);
 
-  void OnClicked(const std::function<void(const Button&)> callback);
+  void OnClicked(const std::function<void(Button&)> callback);
 
   void InteractMove(int x, int y);
 
@@ -26,14 +26,16 @@ class Button {
 
   int GetOrder() const;
 
+  Texture& GetTexture();
+
  private:
   Texture texture_;
   int x_{0};
   int y_{0};
   int size_{0};
-  std::function<void()> on_in_;
-  std::function<void()> on_out_;
-  std::function<void(const Button&)> on_clicked_;
+  std::function<void(Button&)> on_in_;
+  std::function<void(Button&)> on_out_;
+  std::function<void(Button&)> on_clicked_;
   bool is_hovered_{false};
   int order_{0};
 };

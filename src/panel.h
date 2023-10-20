@@ -10,7 +10,7 @@ class TextureLoader;
 
 class Panel {
  public:
-  Panel(TextureLoader& texture_loader, int pos_x, int pos_y, int number_of_buttons);
+  Panel(Renderer renderer, TextureLoader& texture_loader, int pos_x, int pos_y, int number_of_buttons);
 
   void Draw(Window& window);
 
@@ -21,9 +21,10 @@ class Panel {
   [[nodiscard]] bool Clicked(int x, int y) const;
 
   // TODO: consider if this is not too much coupling
-//  void SetCurrentEntity(const Entity& entity);
+  void SetCurrentEntity();
 
  private:
+  Renderer renderer_;
   TextureLoader& texture_loader_;
   int pos_x_{0};
   int pos_y_{0};
@@ -39,7 +40,4 @@ class Panel {
 
   std::vector<Button> buttons_;
   std::vector<ButtonOrderHolder> buttons_order_;
-
-  // TODO: end turn button
-
 };

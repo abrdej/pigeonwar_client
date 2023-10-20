@@ -14,16 +14,17 @@ Game::Game() {
   texture_loader_.LoadTexture("golem");
   texture_loader_.LoadTexture("grass");
   texture_loader_.LoadTexture("border");
+  texture_loader_.LoadTexture("end_turn");
 
   board_ = std::make_unique<Board>(texture_loader_, 15, 10);
-  panel_ = std::make_unique<Panel>(texture_loader_, 150, 10 * 60 + 10, 10);
+  panel_ = std::make_unique<Panel>(window_.GetRenderer(), texture_loader_, 150, 10 * 60 + 10, 4);
   EntityProperties entity_properties;
   entity_properties.name = "commander";
   entity_properties.index = 5;
   entity_properties.health = 50;
   entity_ = std::make_shared<Entity>(window_.GetRenderer(), texture_loader_, entity_properties);
 
-//  panel_->SetEntityButtonTexture("golem");
+  panel_->SetCurrentEntity();
 
   text_ = std::make_unique<Text>(window_.GetRenderer(), 36);
   text_->SetPos(50, 400);
