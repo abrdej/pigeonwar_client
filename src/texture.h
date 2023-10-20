@@ -22,4 +22,5 @@ class Texture {
   SDL_Texture *texture_;
   bool flipped_{false};
   float scaling_factor_{1.f};
+  std::uint8_t transparency_{255};
 };
