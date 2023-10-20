@@ -21,11 +21,13 @@ void Text::SetText(const std::string& text) {
 void Text::SetPos(int x, int y) {
   message_rect_.x = x;
   message_rect_.y = y;
+  UpdateBackgroundRect();
 }
 
 void Text::SetCenterPosX(int x, int y) {
   message_rect_.x = x - message_rect_.w / 2;
   message_rect_.y = y;
+  UpdateBackgroundRect();
 }
 
 void Text::SetColor(const SDL_Color& color) {
@@ -41,6 +43,12 @@ void Text::SetBackgroundColor(const SDL_Color& color) {
   background_color_ = color;
 }
 
+void Text::SetBackgroundExtend(int x, int y) {
+  background_extend_x_ = x;
+  background_extend_y_ = y;
+  UpdateBackgroundRect();
+}
+
 void Text::Draw(Window& window) {
   if (message_) {
     if (background_) {
@@ -51,7 +59,7 @@ void Text::Draw(Window& window) {
                              background_color_.g,
                              background_color_.b,
                              background_color_.a);
-      SDL_RenderFillRect(window.GetRenderer().renderer, &message_rect_);
+      SDL_RenderFillRect(window.GetRenderer().renderer, &background_rect_);
       SDL_SetRenderDrawColor(window.GetRenderer().renderer, r, g, b, a);
     }
     SDL_RenderCopy(window.GetRenderer().renderer, message_, nullptr, &message_rect_);
@@ -65,7 +73,18 @@ void Text::RenderText() {
   if (message_) {
     SDL_DestroyTexture(message_);
   }
-  surface_message_ = TTF_RenderText_Blended(font_, text_.c_str(), color_);
+
+  surface_message_ = TTF_RenderText_Blended_Wrapped(font_, text_.c_str(), color_, 600);
   message_ = SDL_CreateTextureFromSurface(renderer_, surface_message_);
-  TTF_SizeText(font_, text_.c_str(), &message_rect_.w, &message_rect_.h);
+  message_rect_.w = surface_message_->w;
+  message_rect_.h = surface_message_->h;
+  UpdateBackgroundRect();
+}
+
+void Text::UpdateBackgroundRect() {
+  background_rect_ = message_rect_;
+  background_rect_.x -= background_extend_x_;
+  background_rect_.y -= background_extend_y_;
+  background_rect_.w += 2 * background_extend_x_;
+  background_rect_.h += 2 * background_extend_y_;
 }
