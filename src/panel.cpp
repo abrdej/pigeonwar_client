@@ -107,13 +107,13 @@ void Panel::SetCurrentEntity() {
 
   entity_name_->SetPos(15, 600);
   entity_name_->SetText("Golem");
-  entity_name_->SetColor(SDL_Color{235, 235, 235});
+  entity_name_->SetColor(Color{235, 235, 235});
 
   entity_health_->SetPos(95, 605);
   entity_health_->SetText("50");
-  entity_health_->SetColor(SDL_Color{50, 122, 55});
+  entity_health_->SetColor(Color{50, 122, 55});
 
   entity_power_->SetPos(100, 635);
   entity_power_->SetText("35");
-  entity_power_->SetColor(SDL_Color{90, 114, 140});
+  entity_power_->SetColor(Color{90, 114, 140});
 }

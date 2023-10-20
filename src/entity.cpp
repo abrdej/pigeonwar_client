@@ -21,9 +21,9 @@ Entity::Entity(Renderer renderer, TextureLoader& texture_loader, const EntityPro
   if (entity_properties_.health != no_health) {
     health_text_ = std::make_unique<Text>(renderer, 24);
     health_text_->SetText(std::to_string(entity_properties_.health));
-    health_text_->SetColor(SDL_Color{20, 35, 60});
+    health_text_->SetColor(Color{20, 35, 60});
     health_text_->DrawBackground(true);
-    health_text_->SetBackgroundColor(SDL_Color{141, 166, 146, 25});
+    health_text_->SetBackgroundColor(Color{141, 166, 146, 25});
     UpdateHealthPos();
   }
 
@@ -31,7 +31,7 @@ Entity::Entity(Renderer renderer, TextureLoader& texture_loader, const EntityPro
 //  if (entity_properties_.power != no_power) {
 //    power_text_ = std::make_unique<Text>(renderer, 24);
 //    power_text_->SetText(std::to_string(entity_properties_.power));
-//    power_text_->SetColor(SDL_Color{60, 35, 20});
+//    power_text_->SetColor(Color{60, 35, 20});
 //    UpdatePowerPos();
 //  }
 }
