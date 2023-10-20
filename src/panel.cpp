@@ -5,17 +5,19 @@
 
 #include <iostream>
 
-Panel::Panel(Renderer renderer, TextureLoader& texture_loader, int pos_x, int pos_y, int number_of_buttons)
+Panel::Panel(Renderer renderer, TextureLoader& texture_loader, int pos_x, int pos_y, int number_of_buttons,
+             int number_of_effects)
     : renderer_(renderer), texture_loader_(texture_loader), pos_x_(pos_x), pos_y_(pos_y) {
-  buttons_.reserve(number_of_buttons + 1u);
-  for (int n = 0; n < number_of_buttons; ++n) {
-    auto& new_button = buttons_.emplace_back(texture_loader.GetTexture("border"),
+
+  background_ = std::make_unique<Texture>(texture_loader_.GetTexture("panel_background"));
+  background_->SetPos(0, pos_y);
+
+  auto create_button = [&](const std::string& texture_key, int n, auto callback) {
+    auto& new_button = buttons_.emplace_back(texture_loader.GetTexture(texture_key),
                                              pos_x + n * 60,
-                                             pos_y,
+                                             pos_y + 10,
                                              60);
-    new_button.OnClicked([n](Button& button) {
-      std::cout << "Button: " << n << " clicked\n";
-    });
+    new_button.OnClicked(callback);
     new_button.OnIn([](Button& button) {
       button.GetTexture().Scale(1.2);
       std::cout << "OnIn\n";
@@ -25,23 +27,26 @@ Panel::Panel(Renderer renderer, TextureLoader& texture_loader, int pos_x, int po
       std::cout << "OnOut\n";
     });
     buttons_order_.emplace_back(ButtonOrderHolder{&new_button});
-  }
+  };
 
-  auto& end_turn_button = buttons_.emplace_back(texture_loader.GetTexture("end_turn"),
-                                                pos_x + 11 * 60, pos_y, 60);
-  end_turn_button.OnClicked([](const Button& button) {
+  buttons_.reserve(number_of_buttons + number_of_effects + 1u);
+  for (int n = 0; n < number_of_buttons; ++n) {
+    create_button("border", n, [n](Button& button) {
+      std::cout << "Button: " << n << " clicked\n";
+    });
+  }
+  for (int n = 0; n < number_of_effects; ++n) {
+    create_button("border", n + number_of_buttons + 1, [n](Button& button) {
+      std::cout << "Effect: " << n << " clicked\n";
+    });
+  }
+  create_button("end_turn", number_of_buttons + number_of_effects + 2, [](Button& button) {
     std::cout << "End turn clicked\n";
   });
-  end_turn_button.OnIn([](Button& button) {
-    button.GetTexture().Scale(1.2);
-  });
-  end_turn_button.OnOut([](Button& button) {
-    button.GetTexture().Scale(1.0);
-  });
-  buttons_order_.emplace_back(ButtonOrderHolder{&end_turn_button});
 }
 
 void Panel::Draw(Window& window) {
+  background_->Draw(window);
   std::sort(std::begin(buttons_order_), std::end(buttons_order_), Compare{});
   for (auto& button : buttons_order_) {
     button.button->Draw(window);
