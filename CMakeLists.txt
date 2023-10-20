@@ -20,6 +20,7 @@ set(SOURCES
   src/entity.cpp
   src/game.cpp
   src/main.cpp
+  src/panel.cpp
   src/text.cpp
   src/texture.cpp
   src/texture_loader.cpp
