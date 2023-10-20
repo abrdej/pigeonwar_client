@@ -35,6 +35,8 @@ void Texture::Draw(Window& window) {
                        static_cast<int>(rect_.w + 2 * rect_w_scaled_margin),
                        static_cast<int>(rect_.h + 2 * rect_h_scaled_margin)};
 
+  SDL_SetTextureAlphaMod(texture_, transparency_);
+
   SDL_RenderCopyEx(window.GetRenderer().renderer,
                    texture_,
                    nullptr,
@@ -62,5 +64,5 @@ void Texture::Scale(float factor) {
 }
 
 void Texture::SetTransparency(std::uint8_t alpha) {
-  SDL_SetTextureAlphaMod(texture_, alpha);
+  transparency_ = alpha;
 }
