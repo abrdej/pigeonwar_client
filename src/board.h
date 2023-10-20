@@ -8,11 +8,11 @@
 
 class Board {
  public:
-  Board(TextureLoader& texture_loader, int cols, int rows) : cols_(cols), rows_(rows) {
+  Board(TextureLoader& texture_loader, int cols, int rows)
+      : texture_loader_(texture_loader), cols_(cols), rows_(rows) {
     for (int r = 0; r < rows_; ++r) {
       for (int c = 0; c < cols_; ++c) {
-        fields_.push_back(texture_loader.GetTexture("grass"));
-        fields_.back().SetPos(c * 60, r * 60);
+        fields_.emplace_back(texture_loader_.GetTexture("grass")).SetPos(c * 60, r * 60);
       }
     }
   }
@@ -28,7 +28,20 @@ class Board {
     return x >= 0 && x <= cols_ * 60 && y >= 0 && y <= rows_ * 60;
   }
 
+  void ChangeTexture(int x, int y, const std::string& texture_key) {
+    TextureAt(x, y) = texture_loader_.GetTexture(texture_key);
+  }
+
  private:
+  Texture& TextureAt(int x, int y) {
+    try {
+      return fields_.at(y * cols_ + x);
+    } catch (std::out_of_range&) {
+      throw std::out_of_range("Board::TextureAt: x, y out of range: " + std::to_string(x) + ", " + std::to_string(y));
+    }
+  }
+
+  TextureLoader& texture_loader_;
   int cols_;
   int rows_;
   std::vector<Texture> fields_;
