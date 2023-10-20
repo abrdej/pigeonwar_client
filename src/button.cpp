@@ -46,7 +46,7 @@ void Button::InteractMove(int x, int y) {
 }
 
 void Button::InteractPress(int x, int y) {
-  if (is_hovered_) {
+  if (is_hovered_ && on_clicked_) {
     on_clicked_(*this);
   }
 }
