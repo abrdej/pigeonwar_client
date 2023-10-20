@@ -1,5 +1,6 @@
 #include <panel.h>
 
+#include <text.h>
 #include <texture_loader.h>
 
 #include <iostream>
@@ -44,6 +45,10 @@ bool Panel::Clicked(int x, int y) const {
   return x >= pos_x_ && x <= pos_x_ + buttons_.size() * 60 && y >= pos_y_ && y <= pos_y_ + buttons_.size() * 60;
 }
 
-void Panel::SetEntityButtonTexture(const std::string& texture_key) {
-  entity_button_ = std::make_unique<Button>(texture_loader_.GetTexture(texture_key), 15, 600, 120);
-}
+//void Panel::SetCurrentEntity(const Entity& entity) {
+//  std::string entity_name;
+//
+//  entity_button_ = std::make_unique<Button>(texture_loader_.GetTexture(entity_name), 15, 600, 120);
+//  entity_name_ = std::make_unique<Text>(texture_loader_.GetTexture(entity_name), 15, 600, 120);
+//
+//}

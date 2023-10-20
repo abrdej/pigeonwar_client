@@ -7,6 +7,7 @@
 #include <texture_loader.h>
 #include <index_pos_conversion.h>
 #include <text.h>
+#include <renderer.h>
 
 static constexpr auto no_health = std::numeric_limits<std::int32_t>::max();
 static constexpr auto no_power = std::numeric_limits<std::int32_t>::max();
@@ -21,7 +22,7 @@ struct EntityProperties {
 
 class Entity {
  public:
-  Entity(SDL_Renderer* renderer, TextureLoader& texture_loader, const EntityProperties& entity_properties);
+  Entity(Renderer renderer, TextureLoader& texture_loader, const EntityProperties& entity_properties);
 
   void Draw(Window& window);
 

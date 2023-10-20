@@ -1,5 +1,7 @@
 #pragma once
 
+#include <renderer.h>
+
 #include <SDL2/SDL_ttf.h>
 
 #include <iostream>
@@ -16,7 +18,7 @@ static std::string resources_directory = "res/";
 
 class Text {
  public:
-  explicit Text(SDL_Renderer* renderer, int size) : renderer_(renderer) {
+  explicit Text(Renderer renderer, int size) : renderer_(renderer.renderer) {
     font_ = TTF_OpenFont((resources_directory + "verdanab.ttf").c_str(), size);
     if (!font_) {
       std::cout << "Failed to open font\n";
@@ -51,7 +53,7 @@ class Text {
 
   void Draw(Window& window) {
     if (message_) {
-      SDL_RenderCopy(window.GetRenderer(), message_, nullptr, &message_rect_);
+      SDL_RenderCopy(window.GetRenderer().renderer, message_, nullptr, &message_rect_);
     }
   }
 
