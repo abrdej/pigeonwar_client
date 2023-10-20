@@ -1,5 +1,7 @@
 #include <texture.h>
 
+#include <window.h>
+
 #include <iostream>
 #include <string>
 #include <stdexcept>
