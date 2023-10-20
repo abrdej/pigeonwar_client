@@ -30,8 +30,8 @@ void Text::SetCenterPosX(int x, int y) {
   UpdateBackgroundRect();
 }
 
-void Text::SetColor(const SDL_Color& color) {
-  color_ = color;
+void Text::SetColor(const Color& color) {
+  color_ = ToSDL(color);
   RenderText();
 }
 
@@ -39,8 +39,8 @@ void Text::DrawBackground(bool enable) {
   background_ = enable;
 }
 
-void Text::SetBackgroundColor(const SDL_Color& color) {
-  background_color_ = color;
+void Text::SetBackgroundColor(const Color& color) {
+  background_color_ = ToSDL(color);
 }
 
 void Text::SetBackgroundExtend(int x, int y) {

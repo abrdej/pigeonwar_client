@@ -1,5 +1,6 @@
 #pragma once
 
+#include <color.h>
 #include <renderer.h>
 
 #include <SDL2/SDL_ttf.h>
@@ -28,11 +29,11 @@ class Text {
 
   void SetCenterPosX(int x, int y);
 
-  void SetColor(const SDL_Color& color);
+  void SetColor(const Color& color);
 
   void DrawBackground(bool enable);
 
-  void SetBackgroundColor(const SDL_Color& color);
+  void SetBackgroundColor(const Color& color);
 
   void SetBackgroundExtend(int x, int y);
 
