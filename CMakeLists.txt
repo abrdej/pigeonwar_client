@@ -13,8 +13,18 @@ endif ()
 
 configure_file(src/config.h.in ${CMAKE_SOURCE_DIR}/src/config.h @ONLY)
 
-set(SOURCES src/main.cpp src/window.cpp src/texture.cpp src/game.cpp src/texture_loader.cpp
-  src/entity.cpp src/board.cpp src/animation.cpp src/text.cpp)
+set(SOURCES
+  src/animation.cpp
+  src/board.cpp
+  src/button.cpp
+  src/entity.cpp
+  src/game.cpp
+  src/main.cpp
+  src/text.cpp
+  src/texture.cpp
+  src/texture_loader.cpp
+  src/window.cpp)
+
 #if (EMSCRIPTEN)
 #  list(APPEND SOURCES src/websocket_client.cpp)
 #endif ()
