@@ -9,8 +9,7 @@ static std::string resources_directory = "res/";
 #include <config.h>
 #endif
 
-TextureLoader::TextureLoader(Window& window) : window_(window) {
-}
+TextureLoader::TextureLoader(Window& window) : window_(window) {}
 
 void TextureLoader::LoadTexture(const std::string& texture_key) {
   textures_.emplace(texture_key, Texture(window_, resources_directory + texture_key + ".png"));

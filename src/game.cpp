@@ -23,6 +23,8 @@ Game::Game() {
   entity_properties.health = 50;
   entity_ = std::make_shared<Entity>(window_.GetRenderer(), texture_loader_, entity_properties);
 
+  panel_->SetEntityButtonTexture("golem");
+
   text_ = std::make_unique<Text>(window_.GetRenderer(), 36);
   text_->SetPos(50, 400);
   text_->SetText("Hello text");
