@@ -1,6 +1,7 @@
 #pragma once
 
 #include <button.h>
+#include <text.h>
 
 #include <memory>
 #include <vector>
@@ -19,13 +20,26 @@ class Panel {
 
   [[nodiscard]] bool Clicked(int x, int y) const;
 
-  void SetEntityButtonTexture(const std::string& texture_key);
+  // TODO: consider if this is not too much coupling
+//  void SetCurrentEntity(const Entity& entity);
 
  private:
   TextureLoader& texture_loader_;
   int pos_x_{0};
   int pos_y_{0};
+
+  // Icon of the currently selected entity
+  // His stats
+  // His name
+
   std::unique_ptr<Button> entity_button_;
+  std::unique_ptr<Text> entity_name_;
+  std::unique_ptr<Text> entity_health_;
+  std::unique_ptr<Text> entity_power_;
+
   std::vector<Button> buttons_;
   std::vector<ButtonOrderHolder> buttons_order_;
+
+  // TODO: end turn button
+
 };

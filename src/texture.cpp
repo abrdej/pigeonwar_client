@@ -14,7 +14,7 @@ Texture::Texture(Window& window, const std::string &texture_file) {
     std::cout << "No texture: " << texture_file << "\n";
     throw std::runtime_error("Texture: " + std::string(IMG_GetError()));
   }
-  texture_ = SDL_CreateTextureFromSurface(window.GetRenderer(), image);
+  texture_ = SDL_CreateTextureFromSurface(window.GetRenderer().renderer, image);
   rect_.x = 0;
   rect_.y = 0;
   rect_.w = image->w;
@@ -35,7 +35,7 @@ void Texture::Draw(Window& window) {
                        static_cast<int>(rect_.w + 2 * rect_w_scaled_margin),
                        static_cast<int>(rect_.h + 2 * rect_h_scaled_margin)};
 
-  SDL_RenderCopyEx(window.GetRenderer(),
+  SDL_RenderCopyEx(window.GetRenderer().renderer,
                    texture_,
                    nullptr,
                    &scaled_rect,

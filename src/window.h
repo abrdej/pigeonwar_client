@@ -1,5 +1,7 @@
 #pragma once
 
+#include <renderer.h>
+
 #include <functional>
 
 #include <SDL2/SDL.h>
@@ -26,8 +28,8 @@ class Window {
     on_mouse_move_ = std::move(on_mouse_move);
   }
 
-  [[nodiscard]] SDL_Renderer* GetRenderer() const {
-    return renderer_;
+  [[nodiscard]] Renderer GetRenderer() const {
+    return {renderer_};
   }
 
  private:
