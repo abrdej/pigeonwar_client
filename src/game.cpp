@@ -27,10 +27,6 @@ Game::Game() {
 
   panel_->SetCurrentEntity();
 
-  text_ = std::make_unique<Text>(window_.GetRenderer(), 36);
-  text_->SetPos(50, 400);
-  text_->SetText("Hello text");
-
   entity_properties.name = "golem";
   entity_properties.index = 24;
   entity_properties.health = 50;
@@ -110,7 +106,6 @@ void Game::Render() {
   panel_->Draw(window_);
   entity_->Draw(window_);
   entity2_->Draw(window_);
-  text_->Draw(window_);
   window_.Display();
 }
 
