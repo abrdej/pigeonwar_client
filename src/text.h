@@ -34,10 +34,13 @@ class Text {
 
   void SetBackgroundColor(const SDL_Color& color);
 
+  void SetBackgroundExtend(int x, int y);
+
   void Draw(Window& window);
 
  private:
   void RenderText();
+  void UpdateBackgroundRect();
 
   SDL_Renderer* renderer_{nullptr};
   std::string text_;
@@ -48,4 +51,7 @@ class Text {
   SDL_Rect message_rect_{};
   SDL_Color background_color_{0, 0, 0};
   bool background_{false};
+  SDL_Rect background_rect_;
+  int background_extend_x_{0};
+  int background_extend_y_{0};
 };

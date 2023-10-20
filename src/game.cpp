@@ -9,6 +9,16 @@
 #include <emscripten.h>
 #endif
 
+std::unique_ptr<Text> MakeHint(Renderer renderer, const std::string& hint_message) {
+  auto hint = std::make_unique<Text>(renderer, 20);
+  hint->SetText(hint_message);
+  hint->SetCenterPosX(15 * 60 / 2, 10 / 2 * 60);
+  hint->DrawBackground(true);
+  hint->SetBackgroundColor(SDL_Color{235, 235, 235});
+  hint->SetBackgroundExtend(10, 10);
+  return hint;
+}
+
 Game::Game() {
   texture_loader_.LoadTexture("commander");
   texture_loader_.LoadTexture("golem");
@@ -32,6 +42,8 @@ Game::Game() {
   entity_properties.health = 50;
   entity_properties.power = 25;
   entity2_ = std::make_shared<Entity>(window_.GetRenderer(), texture_loader_, entity_properties);
+
+  hint_ = MakeHint(window_.GetRenderer(), "This is a hint, which describes how this ability work for this entity");
 
   window_.OnMousePressed([this](int x, int y) {
     if (board_->Clicked(x, y)) {
@@ -106,6 +118,7 @@ void Game::Render() {
   panel_->Draw(window_);
   entity_->Draw(window_);
   entity2_->Draw(window_);
+  hint_->Draw(window_);
   window_.Display();
 }
 
