@@ -18,57 +18,26 @@ static std::string resources_directory = "res/";
 
 class Text {
  public:
-  explicit Text(Renderer renderer, int size) : renderer_(renderer.renderer) {
-    font_ = TTF_OpenFont((resources_directory + "verdanab.ttf").c_str(), size);
-    if (!font_) {
-      std::cout << "Failed to open font\n";
-    }
-  }
+  explicit Text(Renderer renderer, int size);
 
-  ~Text() {
-    SDL_FreeSurface(surface_message_);
-    SDL_DestroyTexture(message_);
-    TTF_CloseFont(font_);
-  }
+  ~Text();
 
-  void SetText(const std::string& text) {
-    text_ = text;
-    RenderText();
-  }
+  void SetText(const std::string& text);
 
-  void SetPos(int x, int y) {
-    message_rect_.x = x;
-    message_rect_.y = y;
-  }
+  void SetPos(int x, int y);
 
-  void SetCenterPosX(int x, int y) {
-    message_rect_.x = x - message_rect_.w / 2;
-    message_rect_.y = y;
-  }
+  void SetCenterPosX(int x, int y);
 
-  void SetColor(const SDL_Color& color) {
-    color_ = color;
-    RenderText();
-  }
+  void SetColor(const SDL_Color& color);
 
-  void Draw(Window& window) {
-    if (message_) {
-      SDL_RenderCopy(window.GetRenderer().renderer, message_, nullptr, &message_rect_);
-    }
-  }
+  void DrawBackground(bool enable);
+
+  void SetBackgroundColor(const SDL_Color& color);
+
+  void Draw(Window& window);
 
  private:
-  void RenderText() {
-    if (surface_message_) {
-      SDL_FreeSurface(surface_message_);
-    }
-    if (message_) {
-      SDL_DestroyTexture(message_);
-    }
-    surface_message_ = TTF_RenderText_Blended(font_, text_.c_str(), color_);
-    message_ = SDL_CreateTextureFromSurface(renderer_, surface_message_);
-    TTF_SizeText(font_, text_.c_str(), &message_rect_.w, &message_rect_.h);
-  }
+  void RenderText();
 
   SDL_Renderer* renderer_{nullptr};
   std::string text_;
@@ -77,4 +46,6 @@ class Text {
   SDL_Surface* surface_message_{nullptr};
   SDL_Texture* message_{nullptr};
   SDL_Rect message_rect_{};
+  SDL_Color background_color_{0, 0, 0};
+  bool background_{false};
 };

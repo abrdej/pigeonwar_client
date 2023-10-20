@@ -34,6 +34,7 @@ class Game {
   std::shared_ptr<Entity> entity2_;
   std::unique_ptr<Board> board_;
   std::unique_ptr<Panel> panel_;
+  std::unique_ptr<Text> hint_;
 
   std::unique_ptr<MoveAnimation> animation_;
   std::unique_ptr<ScaleAnimation> scale_animation_;
