@@ -42,6 +42,20 @@ class Board {
     return y * cols_ + x;
   }
 
+  void InteractPress(int x, int y) {
+    if (Clicked(x, y)) {
+      // pos to index
+
+    }
+  }
+
+  template <typename Callback>
+  void ForEachField(Callback callback) {
+    for (IndexType i = 0; i < fields_.size(); ++i) {
+      callback(i);
+    }
+  }
+
  private:
   Texture& TextureAt(IndexType index) {
     try {
