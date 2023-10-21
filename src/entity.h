@@ -25,6 +25,8 @@ class Entity {
 
   void BringToTop();
 
+  void ChangeHealth(HealthType change_amount);
+
 //  void SetHealth(std::int32_t health);
 //  void ChangeHealth(std::int32_t amount);
 //  void SetPower(std::int32_t power);
@@ -50,6 +52,7 @@ class Entity {
  private:
   void UpdateHealthPos();
   void UpdatePowerPos();
+  void UpdateHealthStatus();
 
   EntityProperties entity_properties_;
 

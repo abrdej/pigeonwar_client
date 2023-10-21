@@ -63,6 +63,11 @@ void Entity::BringToTop() {
   order_ = ++initial_order;
 }
 
+void Entity::ChangeHealth(HealthType change_amount) {
+  entity_properties_.health += change_amount;
+  UpdateHealthStatus();
+}
+
 std::pair<float, float> Entity::GetPos() const {
   return {x_, y_};
 }
@@ -105,4 +110,10 @@ void Entity::UpdatePowerPos() {
 //  if (power_text_) {
 //    power_text_->SetCenterPosX(x_ + 30, y_ + 30 - 55);
 //  }
+}
+
+void Entity::UpdateHealthStatus() {
+  if (health_text_) {
+    health_text_->SetText(std::to_string(entity_properties_.health));
+  }
 }
