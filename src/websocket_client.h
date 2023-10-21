@@ -12,12 +12,13 @@ class WebsocketClient {
 
   WebsocketClient();
   ~WebsocketClient();
-  void Connect(const std::string& address);
+  bool Connect(const std::string& address, int port);
   void Send(const std::string& message);
   void OnOpen(VoidCallback callback);
   void OnMessage(OnMessageCallback callback);
   void OnError(OnErrorCallback callback);
   void OnClose(VoidCallback callback);
+  void Update(std::size_t max_messages = std::numeric_limits<std::size_t>::infinity());
 
  private:
   struct Impl;

@@ -6,10 +6,15 @@
 #include <nlohmann/json.hpp>
 
 inline void from_json(const nlohmann::json& j, EntityProperties& x) {
-  x.name = j.value("name", x.name);
-  x.health = j.value("health", x.health);
-  x.power = j.value("power", x.power);
-  x.index = j.value("index", x.index);
+  x.name = j[0];
+  x.health = j[1];
+  x.power = j[2];
+  x.index = j[3];
+
+//  x.name = j.value("name", x.name);
+//  x.health = j.value("health", x.health);
+//  x.power = j.value("power", x.power);
+//  x.index = j.value("index", x.index);
 }
 
 inline void from_json(const nlohmann::json& j, LocalGameState& x) {

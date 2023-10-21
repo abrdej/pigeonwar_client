@@ -13,6 +13,7 @@
 #include <text.h>
 #include <texture_loader.h>
 #include <timer.h>
+#include <websocket_client.h>
 #include <window.h>
 
 class Game {
@@ -38,6 +39,8 @@ class Game {
   void EnqueueTalk(const std::string& text, std::chrono::milliseconds hold);
   void EnqueueCallback(std::function<void()> callback);
   void ProcessCallbacks();
+  void ProcessMessage(const std::string& message);
+  void SendMessage(const std::string& message);
 
   std::chrono::system_clock::time_point last_update_;
   std::chrono::milliseconds time_since_update_{0};
@@ -64,4 +67,6 @@ class Game {
   std::unique_ptr<MoveAnimation> animation_;
   std::unique_ptr<ScaleAnimation> scale_animation_;
   std::unique_ptr<TransparencyAnimation> transparency_animation_;
+
+  WebsocketClient client_;
 };
