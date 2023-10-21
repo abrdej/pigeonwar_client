@@ -11,6 +11,7 @@
 #include <panel.h>
 #include <text.h>
 #include <texture_loader.h>
+#include <timer.h>
 #include <window.h>
 
 class Game {
@@ -41,6 +42,7 @@ class Game {
   std::unique_ptr<Panel> panel_;
   std::unique_ptr<Text> hint_;
   MessageProcessor message_processor_;
+  std::optional<std::pair<TimerOnUpdate, int>> hint_timer_;
 
   std::unique_ptr<MoveAnimation> animation_;
   std::unique_ptr<ScaleAnimation> scale_animation_;

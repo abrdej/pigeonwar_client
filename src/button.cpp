@@ -10,7 +10,7 @@ Button::Button(Texture texture, int x, int y, int size)
 }
 
 bool Button::IsHovered(int x, int y) const {
-  return x >= x_ && x <= x_ + size_ && y >= y_ && y <= y_ + size_;
+  return x >= x_ && x < x_ + size_ && y >= y_ && y < y_ + size_;
 }
 
 void Button::Draw(Window& window) {

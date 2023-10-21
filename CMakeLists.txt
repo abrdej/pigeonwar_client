@@ -27,7 +27,9 @@ set(SOURCES
   src/text.cpp
   src/texture.cpp
   src/texture_loader.cpp
-  src/window.cpp)
+  src/timer.cpp
+  src/window.cpp
+)
 
 #if (EMSCRIPTEN)
 #  list(APPEND SOURCES src/websocket_client.cpp)

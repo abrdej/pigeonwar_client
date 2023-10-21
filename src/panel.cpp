@@ -18,13 +18,17 @@ Panel::Panel(Renderer renderer, TextureLoader& texture_loader, int pos_x, int po
                                              pos_y + 10,
                                              60);
     new_button.OnClicked(callback);
-    new_button.OnIn([](Button& button) {
+    new_button.OnIn([this, n](Button& button) {
+      if (on_in_) {
+        on_in_(n);
+      }
       button.GetTexture().Scale(1.2);
-      std::cout << "OnIn\n";
     });
-    new_button.OnOut([](Button& button) {
+    new_button.OnOut([this, n](Button& button) {
       button.GetTexture().Scale(1.0);
-      std::cout << "OnOut\n";
+      if (on_out_) {
+        on_out_(n);
+      }
     });
     buttons_order_.emplace_back(ButtonOrderHolder{&new_button});
   };
@@ -118,4 +122,12 @@ void Panel::SetCurrentEntity(const EntityProperties& entity_properties) {
     entity_power_->SetText(std::to_string(entity_properties.power));
     entity_power_->SetColor(Color{90, 114, 140});
   }
+}
+
+void Panel::OnIn(std::function<void(int)> callback) {
+  on_in_ = std::move(callback);
+}
+
+void Panel::OnOut(std::function<void(int)> callback) {
+  on_out_ = std::move(callback);
 }

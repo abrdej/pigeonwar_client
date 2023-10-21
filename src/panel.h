@@ -1,8 +1,9 @@
 #pragma once
 
-#include <entity_properties.h>
 #include <button.h>
+#include <entity_properties.h>
 #include <text.h>
+#include <timer.h>
 
 #include <memory>
 #include <vector>
@@ -22,14 +23,18 @@ class Panel {
 
   [[nodiscard]] bool Clicked(int x, int y) const;
 
-  // TODO: consider if this is not too much coupling
   void SetCurrentEntity(const EntityProperties& entity_properties);
+  void OnIn(std::function<void(int)> callback);
+  void OnOut(std::function<void(int)> callback);
 
  private:
   Renderer renderer_;
   TextureLoader& texture_loader_;
   int pos_x_{0};
   int pos_y_{0};
+
+  std::function<void(int)> on_in_;
+  std::function<void(int)> on_out_;
 
   std::unique_ptr<Texture> background_;
 
