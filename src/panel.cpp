@@ -96,10 +96,17 @@ void Panel::SetCurrentEntity(const EntityProperties& entity_properties) {
   entity_texture.Scale(1.5);
 
   entity_button_ = std::make_unique<Button>(entity_texture, 25, 615, 120);
-  entity_button_->OnIn([](Button& button) {
+  entity_button_->OnIn([this](Button& button) {
     button.GetTexture().Scale(1.7);
+    if (on_in_) {
+      // TODO: clean up button ids
+      on_in_(-1);
+    }
   });
-  entity_button_->OnOut([](Button& button) {
+  entity_button_->OnOut([this](Button& button) {
+    if (on_out_) {
+      on_out_(-1);
+    }
     button.GetTexture().Scale(1.5);
   });
 
