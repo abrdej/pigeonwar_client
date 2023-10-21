@@ -95,87 +95,87 @@ Game::Game()
     std::cout << "victory_message!!!\n";
   });
 
-  {
-    nlohmann::json entities_pack;
-
-    nlohmann::json commander;
-    commander["name"] = "commander";
-    commander["index"] = 5;
-    commander["health"] = 50;
-    nlohmann::json entity1;
-    entity1.push_back(0);
-    entity1.push_back(commander);
-
-    nlohmann::json golem;
-    golem["name"] = "golem";
-    golem["index"] = 24;
-    golem["health"] = 50;
-    golem["power"] = 25;
-    nlohmann::json entity2;
-    entity2.push_back(1);
-    entity2.push_back(golem);
-
-    entities_pack["entities_pack"].push_back(entity1);
-    entities_pack["entities_pack"].push_back(entity2);
-
-    message_processor_.Process(entities_pack);
-  }
-  {
-    // Test client id
-    nlohmann::json client_id;
-    client_id["client_id"] = 0;
-    message_processor_.Process(client_id);
-    if (client_id_ != 0) {
-      throw std::invalid_argument("Wrong client_id");
-    }
-  }
-  {
-    // Test local state
-    nlohmann::json local_state;
-    nlohmann::json state;
-    state["possible_movements"] = std::vector<std::uint32_t>{23, 25};
-    state["valid_movements"] = std::vector<std::uint32_t>{23};
-    state["selected_index"] = 24;
-    state["actual_target_type"] = "moving";
-    state["button_bitmaps"] = std::vector<std::string>{"shoot"};
-    state["usable"] = std::vector<bool>{true};
-    state["entity_name"] = "golem";
-    local_state["local_state"] = state;
-    message_processor_.Process(local_state);
-
-    if (local_state_.selected_index != 24) {
-      throw std::invalid_argument("Wrong selected_index");
-    }
-  }
-  {
-    // Test global state
-    // TODO: fix game_state to global_state
-    nlohmann::json global_state;
-    nlohmann::json state;
-
-    std::vector<std::deque<EntityIdType>> board;
-    board.resize(10 * 15);
-    board[5].push_back(0);
-    board[24].push_back(1);
-
-    state["board"] = board;
-    state["healths"] = std::unordered_map<EntityIdType, std::int32_t>{{0, 50}, {1, 50}};
-    state["entities_names"] = std::unordered_map<EntityIdType, std::string>{{0, "commander"}, {1, "golem"}};
-    state["entities_players"] = std::unordered_map<EntityIdType, PlayerIdType>{{0, 0}, {1, 0}};
-    state["entities_additional_effects"] = std::unordered_map<EntityIdType, std::vector<std::string>>{};
-    global_state["game_state"] = state;
-    message_processor_.Process(global_state);
-
-    if (global_state_.healths.at(0) != 50) {
-      throw std::invalid_argument("Wrong healths");
-    }
-  }
-  {
-    // Test remove entity
-    nlohmann::json remove_entity;
-    remove_entity["remove_entity"] = 0;
-    message_processor_.Process(remove_entity);
-  }
+//  {
+//    nlohmann::json entities_pack;
+//
+//    nlohmann::json commander;
+//    commander["name"] = "commander";
+//    commander["index"] = 5;
+//    commander["health"] = 50;
+//    nlohmann::json entity1;
+//    entity1.push_back(0);
+//    entity1.push_back(commander);
+//
+//    nlohmann::json golem;
+//    golem["name"] = "golem";
+//    golem["index"] = 24;
+//    golem["health"] = 50;
+//    golem["power"] = 25;
+//    nlohmann::json entity2;
+//    entity2.push_back(1);
+//    entity2.push_back(golem);
+//
+//    entities_pack["entities_pack"].push_back(entity1);
+//    entities_pack["entities_pack"].push_back(entity2);
+//
+//    message_processor_.Process(entities_pack);
+//  }
+//  {
+//    // Test client id
+//    nlohmann::json client_id;
+//    client_id["client_id"] = 0;
+//    message_processor_.Process(client_id);
+//    if (client_id_ != 0) {
+//      throw std::invalid_argument("Wrong client_id");
+//    }
+//  }
+//  {
+//    // Test local state
+//    nlohmann::json local_state;
+//    nlohmann::json state;
+//    state["possible_movements"] = std::vector<std::uint32_t>{23, 25};
+//    state["valid_movements"] = std::vector<std::uint32_t>{23};
+//    state["selected_index"] = 24;
+//    state["actual_target_type"] = "moving";
+//    state["button_bitmaps"] = std::vector<std::string>{"shoot"};
+//    state["usable"] = std::vector<bool>{true};
+//    state["entity_name"] = "golem";
+//    local_state["local_state"] = state;
+//    message_processor_.Process(local_state);
+//
+//    if (local_state_.selected_index != 24) {
+//      throw std::invalid_argument("Wrong selected_index");
+//    }
+//  }
+//  {
+//    // Test global state
+//    // TODO: fix game_state to global_state
+//    nlohmann::json global_state;
+//    nlohmann::json state;
+//
+//    std::vector<std::deque<EntityIdType>> board;
+//    board.resize(10 * 15);
+//    board[5].push_back(0);
+//    board[24].push_back(1);
+//
+//    state["board"] = board;
+//    state["healths"] = std::unordered_map<EntityIdType, std::int32_t>{{0, 50}, {1, 50}};
+//    state["entities_names"] = std::unordered_map<EntityIdType, std::string>{{0, "commander"}, {1, "golem"}};
+//    state["entities_players"] = std::unordered_map<EntityIdType, PlayerIdType>{{0, 0}, {1, 0}};
+//    state["entities_additional_effects"] = std::unordered_map<EntityIdType, std::vector<std::string>>{};
+//    global_state["game_state"] = state;
+//    message_processor_.Process(global_state);
+//
+//    if (global_state_.healths.at(0) != 50) {
+//      throw std::invalid_argument("Wrong healths");
+//    }
+//  }
+//  {
+//    // Test remove entity
+//    nlohmann::json remove_entity;
+//    remove_entity["remove_entity"] = 0;
+//    message_processor_.Process(remove_entity);
+//  }
 //  {
 //    // Test move entity
 //    nlohmann::json move_entity;
@@ -185,27 +185,27 @@ Game::Game()
 //    move_entity["move_entity"] = data;
 //    message_processor_.Process(move_entity);
 //  }
-  {
-    // Test entity talk
-    {
-      nlohmann::json entity_talk;
-      nlohmann::json data;
-      data["entity_talk"] = 24;
-      data["text"] = "Hello my world, I come to destroy you!";
-      data["hold_ms"] = 2000;
-      entity_talk["entity_talk"] = data;
-      message_processor_.Process(entity_talk);
-    }
-    {
-      nlohmann::json entity_talk;
-      nlohmann::json data;
-      data["entity_talk"] = 24;
-      data["text"] = "This is the end!";
-      data["hold_ms"] = 1000;
-      entity_talk["entity_talk"] = data;
-      message_processor_.Process(entity_talk);
-    }
-  }
+//  {
+//    // Test entity talk
+//    {
+//      nlohmann::json entity_talk;
+//      nlohmann::json data;
+//      data["entity_talk"] = 24;
+//      data["text"] = "Hello my world, I come to destroy you!";
+//      data["hold_ms"] = 2000;
+//      entity_talk["entity_talk"] = data;
+//      message_processor_.Process(entity_talk);
+//    }
+//    {
+//      nlohmann::json entity_talk;
+//      nlohmann::json data;
+//      data["entity_talk"] = 24;
+//      data["text"] = "This is the end!";
+//      data["hold_ms"] = 1000;
+//      entity_talk["entity_talk"] = data;
+//      message_processor_.Process(entity_talk);
+//    }
+//  }
 
   window_.OnMousePressed([this](int x, int y) {
     if (board_->Clicked(x, y)) {
@@ -238,6 +238,15 @@ Game::Game()
 //
 //  transparency_animation_ = std::make_unique<TransparencyAnimation>();
 //  transparency_animation_->Handle(entities_collection_.Get(1));
+
+  client_.OnMessage([this](const std::string& message) {
+    ProcessMessage(message);
+  });
+
+  // TODO: configure the address
+  if (!client_.Connect("127.0.0.1", 60001)) {
+    std::cout << "Failed to connect\n";
+  }
 }
 
 #ifdef EMSCRIPTEN
@@ -260,6 +269,7 @@ void Game::Run() {
 }
 
 void Game::ExecuteLoop() {
+  client_.Update(1);
   window_.ProcessEvents();
 
   auto now = std::chrono::system_clock::now();
@@ -312,6 +322,7 @@ void Game::Update(std::chrono::milliseconds delta_time) {
 }
 
 void Game::OnEntityPack(const MessageType& message) {
+  std::cout << "Got entities message pack\n";
   EntityPack entity_pack = message;
   for (const auto& [entity_id, entity_data] : entity_pack) {
     entities_collection_.Add(entity_id, entity_data);
@@ -403,4 +414,13 @@ void Game::ProcessCallbacks() {
     callbacks_.pop();
     callback();
   }
+}
+
+void Game::ProcessMessage(const std::string& str_message) {
+  auto message = nlohmann::json::parse(str_message);
+  message_processor_.Process(message);
+}
+
+void Game::SendMessage(const std::string& message) {
+  client_.Send(message);
 }
