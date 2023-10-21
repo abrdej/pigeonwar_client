@@ -32,6 +32,7 @@ class Game {
   void OnEntityPack(const MessageType& message);
   void OnLocalState(const MessageType& message);
   void OnGlobalState(const MessageType& message);
+  void OnAnimation(const MessageType& message);
   void UpdateBoardState();
   void UpdatePanelState();
   void EnqueueTalk(const std::string& text, std::chrono::milliseconds hold);

@@ -60,6 +60,7 @@ Game::Game()
   });
   message_processor_.OnMessage(local_state_message, &Game::OnLocalState, this);
   message_processor_.OnMessage(global_state_message, &Game::OnGlobalState, this);
+  message_processor_.OnMessage(animation_message, &Game::OnAnimation, this);
   message_processor_.OnMessage(remove_entity_message, [this](const auto& message) {
     EntityIdType entity_id = message;
     entities_collection_.Remove(entity_id);
@@ -86,6 +87,12 @@ Game::Game()
   });
   message_processor_.OnMessage(game_ready_message, [this](const auto&) {
     game_ready_ = true;
+  });
+  message_processor_.OnMessage(defeat_message, [this](const auto&) {
+    std::cout << "Game defeat!!!\n";
+  });
+  message_processor_.OnMessage(victory_message, [this](const auto&) {
+    std::cout << "victory_message!!!\n";
   });
 
   {
@@ -325,6 +332,10 @@ void Game::OnGlobalState(const MessageType& message) {
 //    for (const auto [entity_id, player_id] : global_state_.entities_players) {
 //      entities_collection_.Get(entity_id).SetPlayer(player_id);
 //    }
+}
+
+void Game::OnAnimation(const MessageType& message) {
+
 }
 
 void Game::UpdateBoardState() {
