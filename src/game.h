@@ -3,13 +3,14 @@
 #include <chrono>
 #include <memory>
 
-#include <window.h>
-#include <texture_loader.h>
-#include <entities_collection.h>
-#include <board.h>
-#include <panel.h>
 #include <animation.h>
+#include <board.h>
+#include <entities_collection.h>
+#include <message_processor.h>
+#include <panel.h>
 #include <text.h>
+#include <texture_loader.h>
+#include <window.h>
 
 class Game {
  public:
@@ -34,6 +35,7 @@ class Game {
   std::unique_ptr<Board> board_;
   std::unique_ptr<Panel> panel_;
   std::unique_ptr<Text> hint_;
+  MessageProcessor message_processor_;
 
   std::unique_ptr<MoveAnimation> animation_;
   std::unique_ptr<ScaleAnimation> scale_animation_;
