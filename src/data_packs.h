@@ -1,7 +1,6 @@
 #pragma once
 
-// TODO: this should be not included here
-#include <entity.h>
+#include <defs.h>
 
 #include <unordered_map>
 

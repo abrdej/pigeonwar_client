@@ -3,17 +3,12 @@
 #include <string>
 #include <memory>
 
+#include <defs.h>
 #include <texture.h>
 #include <texture_loader.h>
 #include <index_pos_conversion.h>
 #include <text.h>
 #include <renderer.h>
-
-using EntityIdType = std::uint32_t;
-
-static constexpr auto no_health = std::numeric_limits<std::int32_t>::max();
-static constexpr auto no_power = std::numeric_limits<std::int32_t>::max();
-static constexpr auto no_index = std::numeric_limits<std::int32_t>::max();
 
 struct EntityProperties {
   std::string name;
