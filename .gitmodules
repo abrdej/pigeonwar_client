@@ -1,3 +1,6 @@
 [submodule "external/json"]
 	path = external/json
 	url = git@github.com:nlohmann/json.git
+[submodule "external/lynx"]
+	path = external/lynx
+	url = git@github.com:abrdej/lynx.git
