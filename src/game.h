@@ -29,6 +29,8 @@ class Game {
   std::chrono::milliseconds time_since_update_{0};
   std::chrono::milliseconds time_per_frame_{100};
 
+  ClientIdType client_id_{undefined_client_id};
+
   Window window_;
   TextureLoader texture_loader_{window_};
   EntitiesCollection entities_collection_;
