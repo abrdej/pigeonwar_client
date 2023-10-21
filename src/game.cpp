@@ -54,79 +54,21 @@ Game::Game()
     hint_ = nullptr;
   });
 
-  message_processor_.OnMessage(entities_pack_message, [this](const auto& message) {
-    EntityPack entity_pack = message;
-    for (const auto& [entity_id, entity_data] : entity_pack) {
-      entities_collection_.Add(entity_id, entity_data);
-    }
-    // TODO: check if this will be required
-//    BringEntitiesToTop();
-  });
-
+  message_processor_.OnMessage(entities_pack_message, &Game::OnEntityPack, this);
   message_processor_.OnMessage(client_id_message, [this](const auto& message) {
     client_id_ = message;
   });
-
-  message_processor_.OnMessage(local_state_message, [this](const auto& message) {
-    local_state_ = message;
-    if (local_state_.actual_target_type != "non") {
-      for (const auto possible_movement : local_state_.possible_movements) {
-        std::cout << "possible_movement: " << possible_movement << "\n";
-
-        if (local_state_.actual_target_type == "moving") {
-          board_->ChangeTexture(possible_movement, "grass_move");
-
-        } else if (local_state_.actual_target_type == "enemy") {
-          if (local_state_.valid_movements.count(possible_movement)) {
-            board_->ChangeTexture(possible_movement, "grass_damage");
-          } else {
-            board_->ChangeTexture(possible_movement, "grass_attack");
-          }
-
-        } else if (local_state_.actual_target_type == "friendly") {
-          if (local_state_.valid_movements.count(possible_movement)) {
-            board_->ChangeTexture(possible_movement, "grass_boost");
-          } else {
-            board_->ChangeTexture(possible_movement, "grass_friendly");
-          }
-        }
-      }
-    }
-
-    if (local_state_.selected_index != no_index) {
-      board_->ChangeTexture(local_state_.selected_index, "grass_selected");
-    }
-
-    // Update for entity
-    if (local_state_.selected_index == no_index) {
-      return;
-    }
-
-    auto entity_properties = entities_collection_.EntityPropertiesForIndex(local_state_.selected_index);
-    if (entity_properties) {
-      panel_->SetCurrentEntity(*entity_properties);
-    }
-  });
-
-  message_processor_.OnMessage(global_state_message, [this](const auto& message) {
-    global_state_ = message;
-    // TODO: do we need this
-//    for (const auto [entity_id, player_id] : global_state_.entities_players) {
-//      entities_collection_.Get(entity_id).SetPlayer(player_id);
-//    }
-  });
-
+  message_processor_.OnMessage(local_state_message, &Game::OnLocalState, this);
+  message_processor_.OnMessage(global_state_message, &Game::OnGlobalState, this);
   message_processor_.OnMessage(remove_entity_message, [this](const auto& message) {
     EntityIdType entity_id = message;
     entities_collection_.Remove(entity_id);
   });
-
   message_processor_.OnMessage(move_entity_message, [this](const auto& message) {
     IndexType to_index = message["to_index"];
     EntityIdType entity_id = message["move_entity"];
     entities_collection_.Get(entity_id).SetIndex(to_index);
   });
-
   message_processor_.OnMessage(hint_message, [this](const auto& message) {
     std::string hint = message;
     if (!hint.empty() && hint_timer_.has_value()) {
@@ -316,4 +258,62 @@ void Game::Update(std::chrono::milliseconds delta_time) {
   if (transparency_animation_ && transparency_animation_->Update(delta_time)) {
     transparency_animation_ = nullptr;
   }
+}
+
+void Game::OnEntityPack(const MessageType& message) {
+  EntityPack entity_pack = message;
+  for (const auto& [entity_id, entity_data] : entity_pack) {
+    entities_collection_.Add(entity_id, entity_data);
+  }
+  // TODO: check if this will be required
+//    BringEntitiesToTop();
+}
+
+void Game::OnLocalState(const MessageType& message) {
+  local_state_ = message;
+  if (local_state_.actual_target_type != "non") {
+    for (const auto possible_movement : local_state_.possible_movements) {
+      std::cout << "possible_movement: " << possible_movement << "\n";
+
+      if (local_state_.actual_target_type == "moving") {
+        board_->ChangeTexture(possible_movement, "grass_move");
+
+      } else if (local_state_.actual_target_type == "enemy") {
+        if (local_state_.valid_movements.count(possible_movement)) {
+          board_->ChangeTexture(possible_movement, "grass_damage");
+        } else {
+          board_->ChangeTexture(possible_movement, "grass_attack");
+        }
+
+      } else if (local_state_.actual_target_type == "friendly") {
+        if (local_state_.valid_movements.count(possible_movement)) {
+          board_->ChangeTexture(possible_movement, "grass_boost");
+        } else {
+          board_->ChangeTexture(possible_movement, "grass_friendly");
+        }
+      }
+    }
+  }
+
+  if (local_state_.selected_index != no_index) {
+    board_->ChangeTexture(local_state_.selected_index, "grass_selected");
+  }
+
+  // Update for entity
+  if (local_state_.selected_index == no_index) {
+    return;
+  }
+
+  auto entity_properties = entities_collection_.EntityPropertiesForIndex(local_state_.selected_index);
+  if (entity_properties) {
+    panel_->SetCurrentEntity(*entity_properties);
+  }
+}
+
+void Game::OnGlobalState(const MessageType& message) {
+  global_state_ = message;
+  // TODO: do we need this
+//    for (const auto [entity_id, player_id] : global_state_.entities_players) {
+//      entities_collection_.Get(entity_id).SetPlayer(player_id);
+//    }
 }

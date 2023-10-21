@@ -29,6 +29,13 @@ class MessageProcessor {
   using MessageDataType = nlohmann::json;
   using CallbackType = std::function<void(const MessageDataType& message)>;
 
+  template <typename C>
+  void OnMessage(const std::string& message_type, void(C::*callback)(const MessageDataType& message), C* c) {
+    OnMessage(message_type, [c, callback](const MessageDataType& message) {
+      (*c.*callback)(message);
+    });
+  }
+
   void OnMessage(const std::string& message_type, CallbackType callback);
   void Process(const MessageDataType& message);
 
