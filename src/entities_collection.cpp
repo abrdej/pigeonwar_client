@@ -43,8 +43,16 @@ void EntitiesCollection::Remove(EntityIdType entity_id) {
 }
 
 void EntitiesCollection::Draw(Window& window) {
+  std::vector<Entity*> sorted_entities;
+  sorted_entities.reserve(entities_.size());
   for (auto& [entity_id, entity] : entities_) {
-    entity.Draw(window);
+    sorted_entities.emplace_back(&entity);
+  }
+  std::sort(std::begin(sorted_entities), std::end(sorted_entities), [](const auto e1, const auto e2) {
+    return e1->GetOrder() < e2->GetOrder();
+  });
+  for (const auto& entity : sorted_entities) {
+    entity->Draw(window);
   }
 }
 

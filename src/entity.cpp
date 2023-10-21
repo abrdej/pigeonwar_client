@@ -59,6 +59,10 @@ void Entity::Flip(bool flip) {
   texture_->Flip(flip);
 }
 
+void Entity::BringToTop() {
+  order_ = ++initial_order;
+}
+
 std::pair<float, float> Entity::GetPos() const {
   return {x_, y_};
 }
@@ -85,6 +89,10 @@ void Entity::SetTransparency(std::uint8_t alpha) {
 
 std::string Entity::GetName() const {
   return entity_properties_.name;
+}
+
+int Entity::GetOrder() const {
+  return order_;
 }
 
 void Entity::UpdateHealthPos() {
