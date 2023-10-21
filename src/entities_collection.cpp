@@ -38,6 +38,10 @@ std::optional<EntityProperties> EntitiesCollection::EntityPropertiesForIndex(Ind
   return std::nullopt;
 }
 
+void EntitiesCollection::Remove(EntityIdType entity_id) {
+  entities_.erase(entity_id);
+}
+
 void EntitiesCollection::Draw(Window& window) {
   for (auto& [entity_id, entity] : entities_) {
     entity.Draw(window);

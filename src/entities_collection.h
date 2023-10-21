@@ -14,6 +14,7 @@ class EntitiesCollection {
   Entity& Get(EntityIdType entity_id);
   const Entity& Get(EntityIdType entity_id) const;
   std::optional<EntityProperties> EntityPropertiesForIndex(IndexType index) const;
+  void Remove(EntityIdType entity_id);
 
   void Draw(Window& window);
 

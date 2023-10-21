@@ -10,7 +10,7 @@
 static constexpr auto client_id_message = "client_id";
 static constexpr auto entities_pack_message = "entities_pack";
 static constexpr auto local_state_message = "local_state";
-static constexpr auto game_state_message = "game_state"; // probably global_game_state
+static constexpr auto global_state_message = "game_state";
 static constexpr auto animation_message = "animation";
 static constexpr auto remove_entity_message = "remove_entity";
 static constexpr auto description_message = "description";
