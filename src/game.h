@@ -15,6 +15,8 @@
 #include <window.h>
 
 class Game {
+  using MessageType = nlohmann::json;
+
  public:
   Game();
   void Run();
@@ -26,6 +28,10 @@ class Game {
  private:
   void Render();
   void Update(std::chrono::milliseconds delta_time);
+  void OnEntityPack(const MessageType& message);
+  void OnLocalState(const MessageType& message);
+  void OnGlobalState(const MessageType& message);
+
 
   std::chrono::system_clock::time_point last_update_;
   std::chrono::milliseconds time_since_update_{0};
