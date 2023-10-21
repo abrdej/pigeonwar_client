@@ -19,6 +19,8 @@ class Entity {
 
   void Draw(Window& window);
 
+  void SetIndex(IndexType index);
+
   void Flip(bool flip);
 
 //  void SetHealth(std::int32_t health);
