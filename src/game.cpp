@@ -43,6 +43,10 @@ Game::Game()
 //    BringEntitiesToTop();
   });
 
+  message_processor_.OnMessage(client_id_message, [this](const nlohmann::json& message) {
+    client_id_ = message;
+  });
+
   {
     nlohmann::json entities_pack;
 
@@ -67,6 +71,15 @@ Game::Game()
     entities_pack["entities_pack"].push_back(entity2);
 
     message_processor_.Process(entities_pack);
+  }
+  {
+    // Test client id
+    nlohmann::json client_id;
+    client_id["client_id"] = 0;
+    message_processor_.Process(client_id);
+    if (client_id_ != 0) {
+      throw std::invalid_argument("Wrong client id");
+    }
   }
 
   panel_->SetCurrentEntity();
