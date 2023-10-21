@@ -1,5 +1,6 @@
 #pragma once
 
+#include <entity_properties.h>
 #include <button.h>
 #include <text.h>
 
@@ -22,7 +23,7 @@ class Panel {
   [[nodiscard]] bool Clicked(int x, int y) const;
 
   // TODO: consider if this is not too much coupling
-  void SetCurrentEntity();
+  void SetCurrentEntity(const EntityProperties& entity_properties);
 
  private:
   Renderer renderer_;

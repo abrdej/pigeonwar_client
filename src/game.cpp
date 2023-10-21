@@ -27,6 +27,12 @@ Game::Game()
   texture_loader_.LoadTexture("commander");
   texture_loader_.LoadTexture("golem");
   texture_loader_.LoadTexture("grass");
+  texture_loader_.LoadTexture("grass_move");
+  texture_loader_.LoadTexture("grass_damage");
+  texture_loader_.LoadTexture("grass_attack");
+  texture_loader_.LoadTexture("grass_boost");
+  texture_loader_.LoadTexture("grass_friendly");
+  texture_loader_.LoadTexture("grass_selected");
   texture_loader_.LoadTexture("border");
   texture_loader_.LoadTexture("end_turn");
   texture_loader_.LoadTexture("panel_background");
@@ -34,7 +40,7 @@ Game::Game()
   board_ = std::make_unique<Board>(texture_loader_, 15, 10);
   panel_ = std::make_unique<Panel>(window_.GetRenderer(), texture_loader_, 150, 10 * 60, 4, 5);
 
-  message_processor_.OnMessage(entities_pack_message, [this](const nlohmann::json& message) {
+  message_processor_.OnMessage(entities_pack_message, [this](const auto& message) {
     EntityPack entity_pack = message;
     for (const auto& [entity_id, entity_data] : entity_pack) {
       entities_collection_.Add(entity_id, entity_data);
@@ -43,8 +49,49 @@ Game::Game()
 //    BringEntitiesToTop();
   });
 
-  message_processor_.OnMessage(client_id_message, [this](const nlohmann::json& message) {
+  message_processor_.OnMessage(client_id_message, [this](const auto& message) {
     client_id_ = message;
+  });
+
+  message_processor_.OnMessage(local_state_message, [this](const auto& message) {
+    local_state_ = message;
+    if (local_state_.actual_target_type != "non") {
+      for (const auto possible_movement : local_state_.possible_movements) {
+        std::cout << "possible_movement: " << possible_movement << "\n";
+
+        if (local_state_.actual_target_type == "moving") {
+          board_->ChangeTexture(possible_movement, "grass_move");
+
+        } else if (local_state_.actual_target_type == "enemy") {
+          if (local_state_.valid_movements.count(possible_movement)) {
+            board_->ChangeTexture(possible_movement, "grass_damage");
+          } else {
+            board_->ChangeTexture(possible_movement, "grass_attack");
+          }
+
+        } else if (local_state_.actual_target_type == "friendly") {
+          if (local_state_.valid_movements.count(possible_movement)) {
+            board_->ChangeTexture(possible_movement, "grass_boost");
+          } else {
+            board_->ChangeTexture(possible_movement, "grass_friendly");
+          }
+        }
+      }
+    }
+
+    if (local_state_.selected_index != no_index) {
+      board_->ChangeTexture(local_state_.selected_index, "grass_selected");
+    }
+
+    // Update for entity
+    if (local_state_.selected_index == no_index) {
+      return;
+    }
+
+    auto entity_properties = entities_collection_.EntityPropertiesForIndex(local_state_.selected_index);
+    if (entity_properties) {
+      panel_->SetCurrentEntity(*entity_properties);
+    }
   });
 
   {
@@ -78,11 +125,27 @@ Game::Game()
     client_id["client_id"] = 0;
     message_processor_.Process(client_id);
     if (client_id_ != 0) {
-      throw std::invalid_argument("Wrong client id");
+      throw std::invalid_argument("Wrong client_id");
     }
   }
+  {
+    // Test local state
+    nlohmann::json local_state;
+    nlohmann::json state;
+    state["possible_movements"] = std::vector<std::uint32_t>{23, 25};
+    state["valid_movements"] = std::vector<std::uint32_t>{23};
+    state["selected_index"] = 24;
+    state["actual_target_type"] = "moving";
+    state["button_bitmaps"] = std::vector<std::string>{"shoot"};
+    state["usable"] = std::vector<bool>{true};
+    state["entity_name"] = "golem";
+    local_state["local_state"] = state;
+    message_processor_.Process(local_state);
 
-  panel_->SetCurrentEntity();
+    if (local_state_.selected_index != 24) {
+      throw std::invalid_argument("Wrong selected_index");
+    }
+  }
 
   hint_ = MakeHint(window_.GetRenderer(), "This is a hint, which describes how this ability work for this entity");
 

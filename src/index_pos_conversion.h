@@ -1,13 +1,15 @@
 #pragma once
 
+#include <defs.h>
+
 #include <cstdint>
 
-inline std::pair<int, int> IndexToPos(std::int32_t index) {
-  int col = index % 15;
-  int row = index / 15;
+inline std::pair<int, int> IndexToPos(IndexType index) {
+  int col = static_cast<int>(index) % 15;
+  int row = static_cast<int>(index) / 15u;
   return {col * 60, row * 60};
 }
 
-inline std::int32_t PosToIndex(int x, int y) {
+inline IndexType PosToIndex(int x, int y) {
   return (y / 60) * 15 + (x / 60);
 }
