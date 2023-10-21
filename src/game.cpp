@@ -107,6 +107,12 @@ Game::Game()
     entities_collection_.Remove(entity_id);
   });
 
+  message_processor_.OnMessage(move_entity_message, [this](const auto& message) {
+    IndexType to_index = message["to_index"];
+    EntityIdType entity_id = message["move_entity"];
+    entities_collection_.Get(entity_id).SetIndex(to_index);
+  });
+
   {
     nlohmann::json entities_pack;
 
@@ -188,6 +194,15 @@ Game::Game()
     remove_entity["remove_entity"] = 0;
     message_processor_.Process(remove_entity);
   }
+//  {
+//    // Test move entity
+//    nlohmann::json move_entity;
+//    nlohmann::json data;
+//    data["to_index"] = 5;
+//    data["move_entity"] = 1;
+//    move_entity["move_entity"] = data;
+//    message_processor_.Process(move_entity);
+//  }
 
   hint_ = MakeHint(window_.GetRenderer(), "This is a hint, which describes how this ability work for this entity");
 

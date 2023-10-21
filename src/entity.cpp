@@ -49,6 +49,12 @@ void Entity::Draw(Window& window) {
 //  }
 }
 
+void Entity::SetIndex(IndexType index) {
+  entity_properties_.index = index;
+  auto [x, y] = IndexToPos(index);
+  SetPos(x, y);
+}
+
 void Entity::Flip(bool flip) {
   texture_->Flip(flip);
 }
