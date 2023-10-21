@@ -6,7 +6,7 @@
 #include <animation.h>
 #include <board.h>
 #include <entities_collection.h>
-#include <local_state.h>
+#include <game_state.h>
 #include <message_processor.h>
 #include <panel.h>
 #include <text.h>
@@ -35,7 +35,8 @@ class Game {
   Window window_;
   TextureLoader texture_loader_{window_};
   EntitiesCollection entities_collection_;
-  LocalState local_state_;
+  LocalGameState local_state_;
+  GlobalGameState global_state_;
   std::unique_ptr<Board> board_;
   std::unique_ptr<Panel> panel_;
   std::unique_ptr<Text> hint_;

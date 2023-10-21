@@ -94,6 +94,19 @@ Game::Game()
     }
   });
 
+  message_processor_.OnMessage(global_state_message, [this](const auto& message) {
+    global_state_ = message;
+    // TODO: do we need this
+//    for (const auto [entity_id, player_id] : global_state_.entities_players) {
+//      entities_collection_.Get(entity_id).SetPlayer(player_id);
+//    }
+  });
+
+  message_processor_.OnMessage(remove_entity_message, [this](const auto& message) {
+    EntityIdType entity_id = message;
+    entities_collection_.Remove(entity_id);
+  });
+
   {
     nlohmann::json entities_pack;
 
@@ -146,6 +159,35 @@ Game::Game()
       throw std::invalid_argument("Wrong selected_index");
     }
   }
+  {
+    // Test global state
+    // TODO: fix game_state to global_state
+    nlohmann::json global_state;
+    nlohmann::json state;
+
+    std::vector<std::deque<EntityIdType>> board;
+    board.resize(10 * 15);
+    board[5].push_back(0);
+    board[24].push_back(1);
+
+    state["board"] = board;
+    state["healths"] = std::unordered_map<EntityIdType, std::int32_t>{{0, 50}, {1, 50}};
+    state["entities_names"] = std::unordered_map<EntityIdType, std::string>{{0, "commander"}, {1, "golem"}};
+    state["entities_players"] = std::unordered_map<EntityIdType, PlayerIdType>{{0, 0}, {1, 0}};
+    state["entities_additional_effects"] = std::unordered_map<EntityIdType, std::vector<std::string>>{};
+    global_state["game_state"] = state;
+    message_processor_.Process(global_state);
+
+    if (global_state_.healths.at(0) != 50) {
+      throw std::invalid_argument("Wrong healths");
+    }
+  }
+  {
+    // Test remove entity
+    nlohmann::json remove_entity;
+    remove_entity["remove_entity"] = 0;
+    message_processor_.Process(remove_entity);
+  }
 
   hint_ = MakeHint(window_.GetRenderer(), "This is a hint, which describes how this ability work for this entity");
 
@@ -169,17 +211,17 @@ Game::Game()
     panel_->InteractMove(x, y);
   });
 
-  animation_ = std::make_unique<MoveAnimation>();
-  animation_->to_index = 17;
-  std::cout << "handle\n";
-  animation_->Handle(entities_collection_.Get(0));
-  std::cout << "handle2\n";
-
-  scale_animation_ = std::make_unique<ScaleAnimation>();
-  scale_animation_->Handle(entities_collection_.Get(1));
-
-  transparency_animation_ = std::make_unique<TransparencyAnimation>();
-  transparency_animation_->Handle(entities_collection_.Get(1));
+//  animation_ = std::make_unique<MoveAnimation>();
+//  animation_->to_index = 17;
+//  std::cout << "handle\n";
+//  animation_->Handle(entities_collection_.Get(0));
+//  std::cout << "handle2\n";
+//
+//  scale_animation_ = std::make_unique<ScaleAnimation>();
+//  scale_animation_->Handle(entities_collection_.Get(1));
+//
+//  transparency_animation_ = std::make_unique<TransparencyAnimation>();
+//  transparency_animation_->Handle(entities_collection_.Get(1));
 }
 
 #ifdef EMSCRIPTEN
