@@ -43,7 +43,7 @@ Game::Game()
     hint_timer_.emplace(TimerOnUpdate({[this]() {
       // Test hint
       nlohmann::json hint;
-      hint["hint"] = "This is a hint, which describes how this ability work for this entity";
+      hint["hint"] = "In the heat of battle, Golem's resilience soars, turning him into an indomitable fortress.";
       message_processor_.Process(hint);
     }, std::chrono::milliseconds(500)}), button_id);
   });
