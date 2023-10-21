@@ -26,6 +26,7 @@ class Panel {
   void SetCurrentEntity(const EntityProperties& entity_properties);
   void OnIn(std::function<void(int)> callback);
   void OnOut(std::function<void(int)> callback);
+  void OnClicked(std::function<void(int)> callback);
 
  private:
   Renderer renderer_;
@@ -35,6 +36,7 @@ class Panel {
 
   std::function<void(int)> on_in_;
   std::function<void(int)> on_out_;
+  std::function<void(int)> on_clicked_;
 
   std::unique_ptr<Texture> background_;
 

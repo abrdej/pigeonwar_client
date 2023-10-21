@@ -43,6 +43,12 @@ Game::Game()
     }
     hint_ = nullptr;
   });
+  panel_->OnClicked([this](int button_id) {
+    nlohmann::json on_button;
+    on_button["on_button"]["client_id"] = client_id_;
+    on_button["on_button"]["button"] = button_id;
+    SendMessage(on_button.dump());
+  });
 
   message_processor_.OnMessage(entities_pack_message, &Game::OnEntityPack, this);
   message_processor_.OnMessage(client_id_message, [this](const auto& message) {
@@ -100,7 +106,6 @@ Game::Game()
 
       // TODO: send message to server
     }
-
     panel_->InteractPress(x, y);
   });
 
