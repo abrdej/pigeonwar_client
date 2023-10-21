@@ -2,6 +2,7 @@
 
 #include <index_pos_conversion.h>
 #include <json_conversions.h>
+#include <load_resources.h>
 
 #include <nlohmann/json.hpp>
 
@@ -24,18 +25,7 @@ std::unique_ptr<Text> MakeHint(Renderer renderer, const std::string& hint_messag
 
 Game::Game()
     : entities_collection_(window_, texture_loader_) {
-  texture_loader_.LoadTexture("commander");
-  texture_loader_.LoadTexture("golem");
-  texture_loader_.LoadTexture("grass");
-  texture_loader_.LoadTexture("grass_move");
-  texture_loader_.LoadTexture("grass_damage");
-  texture_loader_.LoadTexture("grass_attack");
-  texture_loader_.LoadTexture("grass_boost");
-  texture_loader_.LoadTexture("grass_friendly");
-  texture_loader_.LoadTexture("grass_selected");
-  texture_loader_.LoadTexture("border");
-  texture_loader_.LoadTexture("end_turn");
-  texture_loader_.LoadTexture("panel_background");
+  LoadResources(texture_loader_);
 
   board_ = std::make_unique<Board>(texture_loader_, 15, 10);
   panel_ = std::make_unique<Panel>(window_.GetRenderer(), texture_loader_, 150, 10 * 60, 4, 5);
