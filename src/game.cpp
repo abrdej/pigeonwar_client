@@ -39,6 +39,20 @@ Game::Game()
 
   board_ = std::make_unique<Board>(texture_loader_, 15, 10);
   panel_ = std::make_unique<Panel>(window_.GetRenderer(), texture_loader_, 150, 10 * 60, 4, 5);
+  panel_->OnIn([this](int button_id) {
+    hint_timer_.emplace(TimerOnUpdate({[this]() {
+      // Test hint
+      nlohmann::json hint;
+      hint["hint"] = "This is a hint, which describes how this ability work for this entity";
+      message_processor_.Process(hint);
+    }, std::chrono::milliseconds(500)}), button_id);
+  });
+  panel_->OnOut([this](int button_id) {
+    if (hint_timer_ && hint_timer_->second == button_id) {
+      hint_timer_ = std::nullopt;
+    }
+    hint_ = nullptr;
+  });
 
   message_processor_.OnMessage(entities_pack_message, [this](const auto& message) {
     EntityPack entity_pack = message;
@@ -115,7 +129,9 @@ Game::Game()
 
   message_processor_.OnMessage(hint_message, [this](const auto& message) {
     std::string hint = message;
-    hint_ = MakeHint(window_.GetRenderer(), hint);
+    if (!hint.empty() && hint_timer_.has_value()) {
+      hint_ = MakeHint(window_.GetRenderer(), hint);
+    }
   });
 
   {
@@ -209,13 +225,6 @@ Game::Game()
 //    message_processor_.Process(move_entity);
 //  }
 
-  {
-    // Test hint
-    nlohmann::json hint;
-    hint["hint"] = "This is a hint, which describes how this ability work for this entity";
-    message_processor_.Process(hint);
-  }
-
   window_.OnMousePressed([this](int x, int y) {
     if (board_->Clicked(x, y)) {
       std::int32_t index = PosToIndex(x, y);
@@ -288,11 +297,16 @@ void Game::Render() {
   board_->Draw(window_);
   panel_->Draw(window_);
   entities_collection_.Draw(window_);
-  hint_->Draw(window_);
+  if (hint_) {
+    hint_->Draw(window_);
+  }
   window_.Display();
 }
 
 void Game::Update(std::chrono::milliseconds delta_time) {
+  if (hint_timer_) {
+    hint_timer_->first.Update();
+  }
   if (animation_ && animation_->Update(delta_time)) {
     animation_ = nullptr;
   }
