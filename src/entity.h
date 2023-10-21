@@ -23,6 +23,8 @@ class Entity {
 
   void Flip(bool flip);
 
+  void BringToTop();
+
 //  void SetHealth(std::int32_t health);
 //  void ChangeHealth(std::int32_t amount);
 //  void SetPower(std::int32_t power);
@@ -43,6 +45,8 @@ class Entity {
 
   [[nodiscard]] std::string GetName() const;
 
+  int GetOrder() const;
+
  private:
   void UpdateHealthPos();
   void UpdatePowerPos();
@@ -56,6 +60,8 @@ class Entity {
   std::int32_t pos_x_{0};
   std::int32_t pox_y_{0};
   bool is_tweening_{false};
+  inline static int initial_order = 0;
+  int order_{0};
 
   std::unique_ptr<Texture> texture_;
   std::unique_ptr<Text> health_text_;

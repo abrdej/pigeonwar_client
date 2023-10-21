@@ -195,8 +195,8 @@ void Game::Update(std::chrono::milliseconds delta_time) {
       talk_timer_ = std::nullopt;
     }
   }
-  if (animation_ && animation_->Update(delta_time)) {
-    animation_ = nullptr;
+  if (move_animation_ && move_animation_->Update(delta_time)) {
+    move_animation_ = nullptr;
   }
   if (scale_animation_ && scale_animation_->Update(delta_time)) {
     scale_animation_ = nullptr;
@@ -232,7 +232,14 @@ void Game::OnGlobalState(const MessageType& message) {
 }
 
 void Game::OnAnimation(const MessageType& message) {
-
+  std::string animation = message[0];
+  if (animation == "move") {
+    EntityIdType entity_id = message[1];
+    IndexType index = message[2];
+    move_animation_ = std::make_unique<MoveAnimation>();
+    move_animation_->to_index = index;
+    move_animation_->Handle(entities_collection_.Get(entity_id));
+  }
 }
 
 void Game::UpdateBoardState() {

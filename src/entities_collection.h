@@ -2,6 +2,7 @@
 
 #include <entity.h>
 
+#include <deque>
 #include <unordered_map>
 
 class Window;

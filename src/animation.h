@@ -20,7 +20,7 @@ struct MoveAnimation {
   float to_x;
   float to_y;
 
-  float speed = 0.01; // TODO: depending on the speed this is different - fix it
+  float speed = 0.02; // TODO: depending on the speed this is different - fix it
 
   Entity* entity_{nullptr};
 
@@ -34,6 +34,8 @@ struct MoveAnimation {
     auto distance = Distance(from_x, from_y, to_x, to_y);
 
     entity.Flip(from_x - to_x > 0);
+
+    entity.BringToTop();
 
     delta_x = (to_x - from_x);
     delta_y = (to_y - from_y);
