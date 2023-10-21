@@ -113,6 +113,11 @@ Game::Game()
     entities_collection_.Get(entity_id).SetIndex(to_index);
   });
 
+  message_processor_.OnMessage(hint_message, [this](const auto& message) {
+    std::string hint = message;
+    hint_ = MakeHint(window_.GetRenderer(), hint);
+  });
+
   {
     nlohmann::json entities_pack;
 
@@ -204,7 +209,12 @@ Game::Game()
 //    message_processor_.Process(move_entity);
 //  }
 
-  hint_ = MakeHint(window_.GetRenderer(), "This is a hint, which describes how this ability work for this entity");
+  {
+    // Test hint
+    nlohmann::json hint;
+    hint["hint"] = "This is a hint, which describes how this ability work for this entity";
+    message_processor_.Process(hint);
+  }
 
   window_.OnMousePressed([this](int x, int y) {
     if (board_->Clicked(x, y)) {
