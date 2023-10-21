@@ -1,9 +1,12 @@
 #include <game.h>
 
+#include <index_pos_conversion.h>
+#include <json_conversions.h>
+
+#include <nlohmann/json.hpp>
+
 #include <chrono>
 #include <iostream>
-
-#include <index_pos_conversion.h>
 
 #ifdef EMSCRIPTEN
 #include <emscripten.h>
@@ -31,19 +34,42 @@ Game::Game()
   board_ = std::make_unique<Board>(texture_loader_, 15, 10);
   panel_ = std::make_unique<Panel>(window_.GetRenderer(), texture_loader_, 150, 10 * 60, 4, 5);
 
-  EntityProperties entity_properties;
-  entity_properties.name = "commander";
-  entity_properties.index = 5;
-  entity_properties.health = 50;
-  entities_collection_.Add(0, entity_properties);
+  message_processor_.OnMessage(entities_pack_message, [this](const nlohmann::json& message) {
+    EntityPack entity_pack = message;
+    for (const auto& [entity_id, entity_data] : entity_pack) {
+      entities_collection_.Add(entity_id, entity_data);
+    }
+    // TODO: check if this will be required
+//    BringEntitiesToTop();
+  });
+
+  {
+    nlohmann::json entities_pack;
+
+    nlohmann::json commander;
+    commander["name"] = "commander";
+    commander["index"] = 5;
+    commander["health"] = 50;
+    nlohmann::json entity1;
+    entity1.push_back(0);
+    entity1.push_back(commander);
+
+    nlohmann::json golem;
+    golem["name"] = "golem";
+    golem["index"] = 24;
+    golem["health"] = 50;
+    golem["power"] = 25;
+    nlohmann::json entity2;
+    entity2.push_back(1);
+    entity2.push_back(golem);
+
+    entities_pack["entities_pack"].push_back(entity1);
+    entities_pack["entities_pack"].push_back(entity2);
+
+    message_processor_.Process(entities_pack);
+  }
 
   panel_->SetCurrentEntity();
-
-  entity_properties.name = "golem";
-  entity_properties.index = 24;
-  entity_properties.health = 50;
-  entity_properties.power = 25;
-  entities_collection_.Add(1, entity_properties);
 
   hint_ = MakeHint(window_.GetRenderer(), "This is a hint, which describes how this ability work for this entity");
 

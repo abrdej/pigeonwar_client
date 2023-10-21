@@ -1,6 +1,11 @@
 #pragma once
 
 #include <entity.h>
+#include <data_packs.h>
+
+#include <nlohmann/json.hpp>
+
+#include <unordered_map>
 
 static constexpr auto client_id_message = "client_id";
 static constexpr auto entities_pack_message = "entities_pack";
@@ -23,10 +28,6 @@ using Entities = std::unordered_map<std::int32_t, std::shared_ptr<Entity>>;
 
 static constexpr auto no_selected_index = std::numeric_limits<std::int32_t>::max();
 
-struct EntityCollection {
-  virtual void Add(std::uint32_t entity_id, const EntityProperties& entity_properties) = 0;
-};
-
 struct LocalState {
   std::vector<std::int32_t> possible_movements;
   std::vector<std::int32_t> valid_movements;
@@ -37,14 +38,18 @@ struct LocalState {
   std::string selected_entity_name;
 };
 
-using EntityPack = std::unordered_map<EntityIdType, EntityProperties>;
-
 void OnClientId();
-
-void OnEntitiesPack(const EntityPack& entity_pack, EntityCollection& entity_collection);
 
 void OnLocalState(const LocalState& local_state, Board& board, Panel& panel, Entities& entities);
 
 class MessageProcessor {
+ public:
+  using MessageDataType = nlohmann::json;
+  using CallbackType = std::function<void(const MessageDataType& message)>;
 
+  void OnMessage(const std::string& message_type, CallbackType callback);
+  void Process(const MessageDataType& message);
+
+ private:
+  std::unordered_map<std::string, CallbackType> callbacks_;
 };
