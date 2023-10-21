@@ -9,6 +9,8 @@
 #include <text.h>
 #include <renderer.h>
 
+using EntityIdType = std::uint32_t;
+
 static constexpr auto no_health = std::numeric_limits<std::int32_t>::max();
 static constexpr auto no_power = std::numeric_limits<std::int32_t>::max();
 static constexpr auto no_index = std::numeric_limits<std::int32_t>::max();
@@ -22,7 +24,11 @@ struct EntityProperties {
 
 class Entity {
  public:
-  Entity(Renderer renderer, TextureLoader& texture_loader, const EntityProperties& entity_properties);
+  Entity(Renderer renderer, const TextureLoader& texture_loader, const EntityProperties& entity_properties);
+  Entity(const Entity&) = delete;
+  Entity(Entity&&) = default;
+  Entity& operator=(const Entity&) = delete;
+  Entity& operator=(Entity&&) = default;
 
   void Draw(Window& window);
 

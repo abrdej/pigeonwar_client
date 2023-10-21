@@ -37,9 +37,11 @@ struct LocalState {
   std::string selected_entity_name;
 };
 
+using EntityPack = std::unordered_map<EntityIdType, EntityProperties>;
+
 void OnClientId();
 
-void OnEntitiesPack(EntityCollection& entity_collection);
+void OnEntitiesPack(const EntityPack& entity_pack, EntityCollection& entity_collection);
 
 void OnLocalState(const LocalState& local_state, Board& board, Panel& panel, Entities& entities);
 

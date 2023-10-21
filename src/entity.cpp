@@ -9,7 +9,7 @@
 // - power text pos offset
 
 
-Entity::Entity(Renderer renderer, TextureLoader& texture_loader, const EntityProperties& entity_properties)
+Entity::Entity(Renderer renderer, const TextureLoader& texture_loader, const EntityProperties& entity_properties)
     : entity_properties_(entity_properties) {
 // 1. Set fields
 

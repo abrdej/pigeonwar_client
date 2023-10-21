@@ -11,7 +11,7 @@ class TextureLoader {
  public:
   explicit TextureLoader(Window& window);
 
-  Texture GetTexture(const std::string& texture_key);
+  Texture GetTexture(const std::string& texture_key) const;
 
   void LoadTexture(const std::string& texture_key);
 

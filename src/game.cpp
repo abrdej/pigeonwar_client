@@ -19,7 +19,8 @@ std::unique_ptr<Text> MakeHint(Renderer renderer, const std::string& hint_messag
   return hint;
 }
 
-Game::Game() {
+Game::Game()
+    : entities_collection_(window_, texture_loader_) {
   texture_loader_.LoadTexture("commander");
   texture_loader_.LoadTexture("golem");
   texture_loader_.LoadTexture("grass");
@@ -29,11 +30,12 @@ Game::Game() {
 
   board_ = std::make_unique<Board>(texture_loader_, 15, 10);
   panel_ = std::make_unique<Panel>(window_.GetRenderer(), texture_loader_, 150, 10 * 60, 4, 5);
+
   EntityProperties entity_properties;
   entity_properties.name = "commander";
   entity_properties.index = 5;
   entity_properties.health = 50;
-  entity_ = std::make_shared<Entity>(window_.GetRenderer(), texture_loader_, entity_properties);
+  entities_collection_.Add(0, entity_properties);
 
   panel_->SetCurrentEntity();
 
@@ -41,7 +43,7 @@ Game::Game() {
   entity_properties.index = 24;
   entity_properties.health = 50;
   entity_properties.power = 25;
-  entity2_ = std::make_shared<Entity>(window_.GetRenderer(), texture_loader_, entity_properties);
+  entities_collection_.Add(1, entity_properties);
 
   hint_ = MakeHint(window_.GetRenderer(), "This is a hint, which describes how this ability work for this entity");
 
@@ -68,14 +70,14 @@ Game::Game() {
   animation_ = std::make_unique<MoveAnimation>();
   animation_->to_index = 17;
   std::cout << "handle\n";
-  animation_->Handle(*entity_);
+  animation_->Handle(entities_collection_.Get(0));
   std::cout << "handle2\n";
 
   scale_animation_ = std::make_unique<ScaleAnimation>();
-  scale_animation_->Handle(*entity2_);
+  scale_animation_->Handle(entities_collection_.Get(1));
 
   transparency_animation_ = std::make_unique<TransparencyAnimation>();
-  transparency_animation_->Handle(*entity2_);
+  transparency_animation_->Handle(entities_collection_.Get(1));
 }
 
 #ifdef EMSCRIPTEN
@@ -116,8 +118,7 @@ void Game::Render() {
   window_.Clear();
   board_->Draw(window_);
   panel_->Draw(window_);
-  entity_->Draw(window_);
-  entity2_->Draw(window_);
+  entities_collection_.Draw(window_);
   hint_->Draw(window_);
   window_.Display();
 }
