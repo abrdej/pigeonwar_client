@@ -13,6 +13,8 @@ class EntitiesCollection {
   void Add(EntityIdType entity_id, const EntityProperties& entity_properties);
   Entity& Get(EntityIdType entity_id);
   const Entity& Get(EntityIdType entity_id) const;
+  std::optional<EntityProperties> EntityPropertiesForIndex(IndexType index) const;
+
   void Draw(Window& window);
 
  private:

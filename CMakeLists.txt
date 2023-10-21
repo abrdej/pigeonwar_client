@@ -20,6 +20,7 @@ set(SOURCES
   src/entities_collection.cpp
   src/entity.cpp
   src/game.cpp
+  src/local_state.cpp
   src/main.cpp
   src/message_processor.cpp
   src/panel.cpp

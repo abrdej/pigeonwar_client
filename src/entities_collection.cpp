@@ -29,6 +29,15 @@ const Entity& EntitiesCollection::Get(EntityIdType entity_id) const {
   }
 }
 
+std::optional<EntityProperties> EntitiesCollection::EntityPropertiesForIndex(IndexType index) const {
+  for (const auto& [entity_id, entity] : entities_) {
+    if (entity.GetProperties().index == index) {
+      return entity.GetProperties();
+    }
+  }
+  return std::nullopt;
+}
+
 void EntitiesCollection::Draw(Window& window) {
   for (auto& [entity_id, entity] : entities_) {
     entity.Draw(window);

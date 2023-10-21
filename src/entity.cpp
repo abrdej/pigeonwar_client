@@ -57,6 +57,10 @@ std::pair<float, float> Entity::GetPos() const {
   return {x_, y_};
 }
 
+EntityProperties Entity::GetProperties() const {
+  return entity_properties_;
+}
+
 void Entity::SetPos(float x, float y) {
   x_ = x;
   y_ = y;

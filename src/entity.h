@@ -1,21 +1,13 @@
 #pragma once
 
-#include <string>
 #include <memory>
 
-#include <defs.h>
+#include <entity_properties.h>
+#include <index_pos_conversion.h>
+#include <renderer.h>
+#include <text.h>
 #include <texture.h>
 #include <texture_loader.h>
-#include <index_pos_conversion.h>
-#include <text.h>
-#include <renderer.h>
-
-struct EntityProperties {
-  std::string name;
-  std::int32_t health{no_health};
-  std::int32_t power{no_power};
-  std::int32_t index{no_index};
-};
 
 class Entity {
  public:
@@ -38,6 +30,8 @@ class Entity {
 //  void SetPlayer(std::int32_t player_id);
 
   std::pair<float, float> GetPos() const;
+
+  EntityProperties GetProperties() const;
 
   void SetPos(float x, float y);
 

@@ -29,15 +29,25 @@ class Board {
   }
 
   void ChangeTexture(int x, int y, const std::string& texture_key) {
-    TextureAt(x, y) = texture_loader_.GetTexture(texture_key);
+    ChangeTexture(ToIndex(x, y), texture_key);
+  }
+
+  void ChangeTexture(IndexType index, const std::string& texture_key) {
+    auto [x, y] = TextureAt(index).GetPos();
+    TextureAt(index) = texture_loader_.GetTexture(texture_key);
+    TextureAt(index).SetPos(x, y);
+  }
+
+  IndexType ToIndex(int x, int y) const {
+    return y * cols_ + x;
   }
 
  private:
-  Texture& TextureAt(int x, int y) {
+  Texture& TextureAt(IndexType index) {
     try {
-      return fields_.at(y * cols_ + x);
+      return fields_.at(index);
     } catch (std::out_of_range&) {
-      throw std::out_of_range("Board::TextureAt: x, y out of range: " + std::to_string(x) + ", " + std::to_string(y));
+      throw std::out_of_range("Board::TextureAt: index out of range: " + std::to_string(index));
     }
   }
 

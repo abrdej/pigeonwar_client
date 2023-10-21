@@ -26,22 +26,6 @@ class Board;
 class Panel;
 using Entities = std::unordered_map<std::int32_t, std::shared_ptr<Entity>>;
 
-static constexpr auto no_selected_index = std::numeric_limits<std::int32_t>::max();
-
-struct LocalState {
-  std::vector<std::int32_t> possible_movements;
-  std::vector<std::int32_t> valid_movements;
-  std::int32_t selected_index;
-  std::string actual_target_type;
-  std::vector<std::string> button_bitmaps;
-  bool usable{false};
-  std::string selected_entity_name;
-};
-
-void OnClientId();
-
-void OnLocalState(const LocalState& local_state, Board& board, Panel& panel, Entities& entities);
-
 class MessageProcessor {
  public:
   using MessageDataType = nlohmann::json;

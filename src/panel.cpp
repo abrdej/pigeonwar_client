@@ -87,10 +87,8 @@ bool Panel::Clicked(int x, int y) const {
   return x >= pos_x_ && x <= pos_x_ + buttons_.size() * 60 && y >= pos_y_ && y <= pos_y_ + buttons_.size() * 60;
 }
 
-void Panel::SetCurrentEntity() {
-  std::string entity_name = "golem";
-
-  auto entity_texture = texture_loader_.GetTexture(entity_name);
+void Panel::SetCurrentEntity(const EntityProperties& entity_properties) {
+  auto entity_texture = texture_loader_.GetTexture(entity_properties.name);
   entity_texture.Scale(1.5);
 
   entity_button_ = std::make_unique<Button>(entity_texture, 25, 615, 120);
@@ -106,14 +104,18 @@ void Panel::SetCurrentEntity() {
   entity_power_ = std::make_unique<Text>(renderer_, 22);
 
   entity_name_->SetPos(15, 600);
-  entity_name_->SetText("Golem");
+  entity_name_->SetText(entity_properties.name);
   entity_name_->SetColor(Color{235, 235, 235});
 
-  entity_health_->SetPos(95, 605);
-  entity_health_->SetText("50");
-  entity_health_->SetColor(Color{50, 122, 55});
+  if (entity_properties.health != no_health) {
+    entity_health_->SetPos(95, 605);
+    entity_health_->SetText(std::to_string(entity_properties.health));
+    entity_health_->SetColor(Color{50, 122, 55});
+  }
 
-  entity_power_->SetPos(100, 635);
-  entity_power_->SetText("35");
-  entity_power_->SetColor(Color{90, 114, 140});
+  if (entity_properties.power != no_power) {
+    entity_power_->SetPos(100, 635);
+    entity_power_->SetText(std::to_string(entity_properties.power));
+    entity_power_->SetColor(Color{90, 114, 140});
+  }
 }
