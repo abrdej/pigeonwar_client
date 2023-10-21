@@ -50,6 +50,9 @@ void Text::SetBackgroundExtend(int x, int y) {
 }
 
 void Text::Draw(Window& window) {
+  if (text_ == "dfsdfsdfsd" && !message_) {
+    std::cout << "message_ is null\n";
+  }
   if (message_) {
     if (background_) {
       Uint8 r, g, b, a;
@@ -62,6 +65,9 @@ void Text::Draw(Window& window) {
       SDL_RenderFillRect(window.GetRenderer().renderer, &background_rect_);
       SDL_SetRenderDrawColor(window.GetRenderer().renderer, r, g, b, a);
     }
+    if (text_ == "dfsdfsdfsd") {
+      std::cout << "Render copy\n";
+    }
     SDL_RenderCopy(window.GetRenderer().renderer, message_, nullptr, &message_rect_);
   }
 }
@@ -73,9 +79,27 @@ void Text::RenderText() {
   if (message_) {
     SDL_DestroyTexture(message_);
   }
+//  if (text_.empty()) {
+//    return;
+//  }
+
+  if (text_ == "dfsdfsdfsd") {
+    std::cout << "RenderText: " << text_ << "\n";
+  }
+
 
   surface_message_ = TTF_RenderText_Blended_Wrapped(font_, text_.c_str(), color_, 600);
+
+  if (text_ == "dfsdfsdfsd" && !surface_message_) {
+    std::cout << "Failed to create a surface\n";
+  }
+
   message_ = SDL_CreateTextureFromSurface(renderer_, surface_message_);
+
+  if (text_ == "dfsdfsdfsd" && !message_) {
+    std::cout << "Failed to create a message_\n";
+  }
+
   message_rect_.w = surface_message_->w;
   message_rect_.h = surface_message_->h;
   UpdateBackgroundRect();
