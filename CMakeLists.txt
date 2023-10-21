@@ -17,6 +17,7 @@ set(SOURCES
   src/animation.cpp
   src/board.cpp
   src/button.cpp
+  src/entities_collection.cpp
   src/entity.cpp
   src/game.cpp
   src/main.cpp

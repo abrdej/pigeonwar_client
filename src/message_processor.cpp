@@ -3,36 +3,11 @@
 #include <board.h>
 #include <panel.h>
 
-void OnEntitiesPack(EntityCollection& entity_collection) {
-  // TODO: translate json_data to entities pack;
-
-  for (int i = 0; i < 10; ++i) {
-    EntityProperties entity_properties;
-    // fill entity properties
+void OnEntitiesPack(const EntityPack& entity_pack, EntityCollection& entity_collection) {
+  for (const auto& [entity_id, entity_properties] : entity_pack) {
     entity_collection.Add(entity_id, entity_properties);
   }
-
   BringEntitiesToTop();
-
-//  var entities_pack = json_data['entities_pack'];
-//
-//  for (var i = 0; i < entities_pack.length; i++) {
-//
-//    var entity_id = entities_pack[i][0];
-//    var entity_data = [];
-//
-//    entity_data = entities_pack[i][1];
-//
-//    var entity_name = entity_data[0];
-//    var entity_health = entity_data[1];
-//    var entity_power = entity_data[2];
-//    var entity_index = entity_data[3];
-//
-//    entities[entity_id] =
-//        new Entity(game, entity_name, entity_health, entity_power, entity_index);
-//  }
-//
-//  bring_entities_to_top();
 }
 
 void OnLocalState(const LocalState& local_state, Board& board, Panel& panel, Entities& entities) {

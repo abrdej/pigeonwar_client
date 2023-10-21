@@ -5,7 +5,7 @@
 
 #include <window.h>
 #include <texture_loader.h>
-#include <entity.h>
+#include <entities_collection.h>
 #include <board.h>
 #include <panel.h>
 #include <animation.h>
@@ -30,8 +30,7 @@ class Game {
 
   Window window_;
   TextureLoader texture_loader_{window_};
-  std::shared_ptr<Entity> entity_;
-  std::shared_ptr<Entity> entity2_;
+  EntitiesCollection entities_collection_;
   std::unique_ptr<Board> board_;
   std::unique_ptr<Panel> panel_;
   std::unique_ptr<Text> hint_;
