@@ -75,6 +75,18 @@ Game::Game()
       hint_ = MakeHint(window_.GetRenderer(), hint);
     }
   });
+  message_processor_.OnMessage(entity_talk_message, [this](const auto& message) {
+    IndexType entity_index = message["entity_talk"];
+    std::string text = message["text"];
+    int hold_ms = message.value("hold_ms", 500);
+    local_state_.selected_index = entity_index;
+    UpdateBoardState();
+    UpdatePanelState();
+    EnqueueTalk(text, std::chrono::milliseconds(hold_ms));
+  });
+  message_processor_.OnMessage(game_ready_message, [this](const auto&) {
+    game_ready_ = true;
+  });
 
   {
     nlohmann::json entities_pack;
@@ -166,6 +178,27 @@ Game::Game()
 //    move_entity["move_entity"] = data;
 //    message_processor_.Process(move_entity);
 //  }
+  {
+    // Test entity talk
+    {
+      nlohmann::json entity_talk;
+      nlohmann::json data;
+      data["entity_talk"] = 24;
+      data["text"] = "Hello my world, I come to destroy you!";
+      data["hold_ms"] = 2000;
+      entity_talk["entity_talk"] = data;
+      message_processor_.Process(entity_talk);
+    }
+    {
+      nlohmann::json entity_talk;
+      nlohmann::json data;
+      data["entity_talk"] = 24;
+      data["text"] = "This is the end!";
+      data["hold_ms"] = 1000;
+      entity_talk["entity_talk"] = data;
+      message_processor_.Process(entity_talk);
+    }
+  }
 
   window_.OnMousePressed([this](int x, int y) {
     if (board_->Clicked(x, y)) {
@@ -242,12 +275,22 @@ void Game::Render() {
   if (hint_) {
     hint_->Draw(window_);
   }
+  if (talk_) {
+    talk_->Draw(window_);
+  }
   window_.Display();
 }
 
 void Game::Update(std::chrono::milliseconds delta_time) {
   if (hint_timer_) {
-    hint_timer_->first.Update();
+    if (hint_timer_->first.Update()) {
+      hint_timer_ = std::nullopt;
+    }
+  }
+  if (talk_timer_) {
+    if (talk_timer_->Update()) {
+      talk_timer_ = std::nullopt;
+    }
   }
   if (animation_ && animation_->Update(delta_time)) {
     animation_ = nullptr;
@@ -258,6 +301,7 @@ void Game::Update(std::chrono::milliseconds delta_time) {
   if (transparency_animation_ && transparency_animation_->Update(delta_time)) {
     transparency_animation_ = nullptr;
   }
+  ProcessCallbacks();
 }
 
 void Game::OnEntityPack(const MessageType& message) {
@@ -271,10 +315,21 @@ void Game::OnEntityPack(const MessageType& message) {
 
 void Game::OnLocalState(const MessageType& message) {
   local_state_ = message;
+  UpdateBoardState();
+  UpdatePanelState();
+}
+
+void Game::OnGlobalState(const MessageType& message) {
+  global_state_ = message;
+  // TODO: do we need this
+//    for (const auto [entity_id, player_id] : global_state_.entities_players) {
+//      entities_collection_.Get(entity_id).SetPlayer(player_id);
+//    }
+}
+
+void Game::UpdateBoardState() {
   if (local_state_.actual_target_type != "non") {
     for (const auto possible_movement : local_state_.possible_movements) {
-      std::cout << "possible_movement: " << possible_movement << "\n";
-
       if (local_state_.actual_target_type == "moving") {
         board_->ChangeTexture(possible_movement, "grass_move");
 
@@ -294,26 +349,47 @@ void Game::OnLocalState(const MessageType& message) {
       }
     }
   }
-
   if (local_state_.selected_index != no_index) {
     board_->ChangeTexture(local_state_.selected_index, "grass_selected");
   }
+}
 
-  // Update for entity
+void Game::UpdatePanelState() {
   if (local_state_.selected_index == no_index) {
     return;
   }
-
   auto entity_properties = entities_collection_.EntityPropertiesForIndex(local_state_.selected_index);
   if (entity_properties) {
     panel_->SetCurrentEntity(*entity_properties);
   }
 }
 
-void Game::OnGlobalState(const MessageType& message) {
-  global_state_ = message;
-  // TODO: do we need this
-//    for (const auto [entity_id, player_id] : global_state_.entities_players) {
-//      entities_collection_.Get(entity_id).SetPlayer(player_id);
-//    }
+void Game::EnqueueTalk(const std::string& text, std::chrono::milliseconds hold) {
+  if (talk_) {
+    text_to_talk_.emplace(text, hold);
+    return;
+  }
+  talk_ = MakeHint(window_.GetRenderer(), text);
+  talk_timer_.emplace([this, text]() {
+    talk_ = nullptr;
+    if (!text_to_talk_.empty()) {
+      EnqueueCallback([this]() {
+        auto [next_text, next_hold] = text_to_talk_.front();
+        text_to_talk_.pop();
+        EnqueueTalk(next_text, next_hold);
+      });
+    }
+  }, std::chrono::milliseconds(hold));
+}
+
+void Game::EnqueueCallback(std::function<void()> callback) {
+  callbacks_.push(std::move(callback));
+}
+
+void Game::ProcessCallbacks() {
+  while (!callbacks_.empty()) {
+    auto callback = callbacks_.front();
+    callbacks_.pop();
+    callback();
+  }
 }

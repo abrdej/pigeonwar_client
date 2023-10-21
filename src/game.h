@@ -1,6 +1,7 @@
 #pragma once
 
 #include <chrono>
+#include <queue>
 #include <memory>
 
 #include <animation.h>
@@ -31,13 +32,18 @@ class Game {
   void OnEntityPack(const MessageType& message);
   void OnLocalState(const MessageType& message);
   void OnGlobalState(const MessageType& message);
-
+  void UpdateBoardState();
+  void UpdatePanelState();
+  void EnqueueTalk(const std::string& text, std::chrono::milliseconds hold);
+  void EnqueueCallback(std::function<void()> callback);
+  void ProcessCallbacks();
 
   std::chrono::system_clock::time_point last_update_;
   std::chrono::milliseconds time_since_update_{0};
   std::chrono::milliseconds time_per_frame_{100};
 
   ClientIdType client_id_{undefined_client_id};
+  bool game_ready_{false};
 
   Window window_;
   TextureLoader texture_loader_{window_};
@@ -47,8 +53,12 @@ class Game {
   std::unique_ptr<Board> board_;
   std::unique_ptr<Panel> panel_;
   std::unique_ptr<Text> hint_;
+  std::unique_ptr<Text> talk_;
   MessageProcessor message_processor_;
+  std::queue<std::pair<std::string, std::chrono::milliseconds>> text_to_talk_;
   std::optional<std::pair<TimerOnUpdate, int>> hint_timer_;
+  std::optional<TimerOnUpdate> talk_timer_;
+  std::queue<std::function<void()>> callbacks_;
 
   std::unique_ptr<MoveAnimation> animation_;
   std::unique_ptr<ScaleAnimation> scale_animation_;

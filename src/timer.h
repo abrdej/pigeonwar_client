@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <functional>
+#include <iostream>
 
 class TimerOnUpdate {
  public:
@@ -13,16 +14,22 @@ class TimerOnUpdate {
       : callback_(std::move(callback)), timeout_point_(std::chrono::steady_clock::now() + timeout) {
   }
 
-  void Update() {
+  ~TimerOnUpdate() {
+    suspended_ = false;
+  }
+
+  bool Update() {
     if (suspended_) {
-      return;
+      return true;
     }
     if (std::chrono::steady_clock::now() >= timeout_point_) {
       if (callback_) {
         callback_();
       }
       suspended_ = true;
+      return true;
     }
+    return false;
   }
 
  private:
