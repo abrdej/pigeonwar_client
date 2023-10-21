@@ -22,6 +22,7 @@ set(SOURCES
   src/entity.cpp
   src/game.cpp
   src/game_state.cpp
+  src/load_resources.cpp
   src/main.cpp
   src/message_processor.cpp
   src/panel.cpp
