@@ -35,17 +35,20 @@ Panel::Panel(Renderer renderer, TextureLoader& texture_loader, int pos_x, int po
 
   buttons_.reserve(number_of_buttons + number_of_effects + 1u);
   for (int n = 0; n < number_of_buttons; ++n) {
-    create_button("border", n, [n](Button& button) {
+    create_button("border", n, [this, n](Button& button) {
       std::cout << "Button: " << n << " clicked\n";
+      on_clicked_(n);
     });
   }
   for (int n = 0; n < number_of_effects; ++n) {
-    create_button("border", n + number_of_buttons + 1, [n](Button& button) {
+    create_button("border", n + number_of_buttons + 1, [this, n](Button& button) {
       std::cout << "Effect: " << n << " clicked\n";
+      //on_clicked_(n);
     });
   }
-  create_button("end_turn", number_of_buttons + number_of_effects + 2, [](Button& button) {
+  create_button("end_turn", number_of_buttons + number_of_effects + 2, [this](Button& button) {
     std::cout << "End turn clicked\n";
+    on_clicked_(5); // TODO: define button_ids!!!
   });
 }
 
@@ -137,4 +140,8 @@ void Panel::OnIn(std::function<void(int)> callback) {
 
 void Panel::OnOut(std::function<void(int)> callback) {
   on_out_ = std::move(callback);
+}
+
+void Panel::OnClicked(std::function<void(int)> callback) {
+  on_clicked_ = std::move(callback);
 }
