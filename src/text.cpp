@@ -49,6 +49,10 @@ void Text::SetBackgroundExtend(int x, int y) {
   UpdateBackgroundRect();
 }
 
+std::pair<int, int> Text::GetPos() const {
+  return {message_rect_.x, message_rect_.y};
+}
+
 void Text::Draw(Window& window) {
   if (text_ == "dfsdfsdfsd" && !message_) {
     std::cout << "message_ is null\n";
