@@ -64,8 +64,8 @@ class Game {
   std::optional<TimerOnUpdate> talk_timer_;
   std::queue<std::function<void()>> callbacks_;
 
-  std::unique_ptr<MoveAnimation> move_animation_;
-  std::unique_ptr<ChangeHealthAnimation> change_health_animation_;
+  std::vector<std::unique_ptr<AnimationInterface>> animations_;
+
   std::unique_ptr<ScaleAnimation> scale_animation_;
   std::unique_ptr<TransparencyAnimation> transparency_animation_;
 

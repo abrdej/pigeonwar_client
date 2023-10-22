@@ -181,8 +181,8 @@ void Game::Render() {
   if (talk_) {
     talk_->Draw(window_);
   }
-  if (change_health_animation_) {
-    change_health_animation_->Draw(window_);
+  for (const auto& animations : animations_) {
+    animations->Draw(window_);
   }
   window_.Display();
 }
@@ -198,12 +198,12 @@ void Game::Update(std::chrono::milliseconds delta_time) {
       talk_timer_ = std::nullopt;
     }
   }
-  if (move_animation_ && move_animation_->Update(delta_time)) {
-    move_animation_ = nullptr;
-  }
-  if (change_health_animation_ && change_health_animation_->Update(delta_time)) {
-    change_health_animation_ = nullptr;
-  }
+  animations_.erase(std::remove_if(std::begin(animations_),
+                                   std::end(animations_),
+                                   [delta_time](auto& x) {
+                                     return x->Update(delta_time);
+                                   }), std::end(animations_));
+
   if (scale_animation_ && scale_animation_->Update(delta_time)) {
     scale_animation_ = nullptr;
   }
@@ -242,15 +242,16 @@ void Game::OnAnimation(const MessageType& message) {
   if (animation == "move") {
     EntityIdType entity_id = message[1];
     IndexType index = message[2];
-    move_animation_ = std::make_unique<MoveAnimation>(entities_collection_.Get(entity_id), index);
+    animations_.emplace_back(
+        std::make_unique<MoveAnimation>(entities_collection_.Get(entity_id), index));
 
   } else if (animation == "change_health") {
     EntityIdType entity_id = message[1];
     HealthType change_amount = message[2];
-    change_health_animation_ =
+    animations_.emplace_back(
         std::make_unique<ChangeHealthAnimation>(window_.GetRenderer(),
                                                 entities_collection_.Get(entity_id),
-                                                change_amount);
+                                                change_amount));
   }
 }
 
