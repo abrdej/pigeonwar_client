@@ -1,18 +1,21 @@
 #include <animation.h>
 
-
-
-MoveAnimation::MoveAnimation(Entity& entity, IndexType to_index) {
-  auto [x, y] = IndexToPos(to_index);
+MoveAnimation::MoveAnimation(Entity& entity, IndexType target_index)
+    : entity_(entity), target_index_(target_index) {
+  auto [x, y] = IndexToPos(target_index_);
   move_to_ = std::make_unique<MoveToT>(entity, x, y, speed_);
 }
 
 bool MoveAnimation::Update(std::chrono::milliseconds delta_time) {
-  return move_to_->Update(delta_time);
+  if (move_to_->Update(delta_time)) {
+    entity_.SetIndex(target_index_);
+    return true;
+  }
+  return false;
 }
 
 ChangeHealthAnimation::ChangeHealthAnimation(Renderer renderer, Entity& entity, HealthType change_amount)
-    : renderer_(renderer), entity_(&entity), change_amount_(change_amount),
+    : renderer_(renderer), entity_(entity), change_amount_(change_amount),
       color_(change_amount < 0 ? Color{173, 32, 14, 255} : Color{47, 117, 66, 255}) {
 
   auto [x, y] = entity.GetPos();
@@ -30,7 +33,7 @@ ChangeHealthAnimation::ChangeHealthAnimation(Renderer renderer, Entity& entity, 
 
 bool ChangeHealthAnimation::Update(std::chrono::milliseconds delta_time) {
   if (move_by_->Update(delta_time)) {
-    entity_->ChangeHealth(change_amount_);
+    entity_.ChangeHealth(change_amount_);
     move_by_ = nullptr;
     text_ = nullptr;
     return true;
