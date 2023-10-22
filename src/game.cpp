@@ -242,14 +242,15 @@ void Game::OnAnimation(const MessageType& message) {
   if (animation == "move") {
     EntityIdType entity_id = message[1];
     IndexType index = message[2];
-    move_animation_ = std::make_unique<MoveAnimation>(index);
-    move_animation_->Handle(entities_collection_.Get(entity_id));
+    move_animation_ = std::make_unique<MoveAnimation>(entities_collection_.Get(entity_id), index);
 
   } else if (animation == "change_health") {
     EntityIdType entity_id = message[1];
     HealthType change_amount = message[2];
-    change_health_animation_ = std::make_unique<ChangeHealthAnimation>(window_.GetRenderer(), change_amount);
-    change_health_animation_->Handle(entities_collection_.Get(entity_id));
+    change_health_animation_ =
+        std::make_unique<ChangeHealthAnimation>(window_.GetRenderer(),
+                                                entities_collection_.Get(entity_id),
+                                                change_amount);
   }
 }
 

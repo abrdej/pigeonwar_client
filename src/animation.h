@@ -10,81 +10,134 @@ inline double Distance(int from_x, int from_y, int to_x, int to_y) {
   return std::sqrt(std::pow(from_x - to_x, 2) + std::pow(from_y - to_y, 2));
 }
 
-class MoveAnimation {
+template <typename T, bool flip, bool bring_to_top>
+class MoveTo {
  public:
-  explicit MoveAnimation(IndexType to_index) : to_index_(to_index) {}
-
-  void Handle(Entity& entity) {
-    entity_ = &entity;
-
-    std::tie(to_x_, to_y_) = IndexToPos(to_index_);
-
-    auto [from_x, from_y] = entity.GetPos();
-
-    auto distance = Distance(from_x, from_y, to_x_, to_y_);
-
-    entity.Flip(from_x - to_x_ > 0);
-
-    entity.BringToTop();
-
-    delta_x_ = (to_x_ - from_x);
-    delta_y_ = (to_y_ - from_y);
-
+  MoveTo(T& movable, int x, int y, float speed)
+      : movable_(movable), target_x_(x), target_y_(y), speed_(speed) {
+    auto [from_x, from_y] = movable_.GetPos();
+    if constexpr (flip) {
+      movable.Flip(from_x - target_x_ > 0);
+    }
+    if constexpr (bring_to_top) {
+      movable.BringToTop();
+    }
+    auto distance = Distance(from_x, from_y, target_x_, target_y_);
+    delta_x_ = (target_x_ - from_x);
+    delta_y_ = (target_y_ - from_y);
     delta_x_ = delta_x_ / distance;
     delta_y_ = delta_y_ / distance;
   }
 
   bool Update(std::chrono::milliseconds delta_time) {
-    auto [x, y] = entity_->GetPos();
+    auto [x, y] = movable_.GetPos();
 
-    auto pos_x = x + speed_ * delta_x_ * delta_time.count();
-    auto pos_y = y + speed_ * delta_y_ * delta_time.count();
+    auto pos_x = x + speed_ * delta_x_ * static_cast<float>(delta_time.count());
+    auto pos_y = y + speed_ * delta_y_ * static_cast<float>(delta_time.count());
 
-    if (std::abs(pos_x - to_x_) < 2.5 && std::abs(pos_y - to_y_) < 2.5) {
-      entity_->SetPos(to_x_, to_y_);
+    if (std::abs(pos_x - target_x_) < 2.5 && std::abs(pos_y - target_y_) < 2.5) {
+      movable_.SetPos(target_x_, target_y_);
       return true;
     } else {
-      entity_->SetPos(pos_x, pos_y);
+      movable_.SetPos(pos_x, pos_y);
       return false;
     }
   }
 
  private:
-  int to_index_;
-  float delta_x_;
-  float delta_y_;
-  float to_x_;
-  float to_y_;
-  float speed_ = 0.02; // TODO: depending on the speed this is different - fix it
-  Entity* entity_{nullptr};
+  T& movable_;
+  int target_x_{0};
+  int target_y_{0};
+  float delta_x_{0.f};
+  float delta_y_{0.f};
+  float speed_{0.f};
 };
 
-class ChangeHealthAnimation {
+template <typename T, bool flip, bool bring_to_top>
+class MoveBy {
  public:
-  explicit ChangeHealthAnimation(Renderer renderer, HealthType change_amount)
-      : renderer_(renderer), change_amount_(change_amount) {
-    color_ = change_amount < 0 ? Color{173, 32, 14, 255} : Color{47, 117, 66, 255};
-  }
-
-  void Handle(Entity& entity) {
-    entity_ = &entity;
-    std::tie(initial_x_, initial_y_) = entity.GetPos();
-    // TODO: this should not be magic number here
-    initial_x_ += 15;
-    initial_y_ -= 30;
-    current_y_ = initial_y_;
-    text_ = std::make_unique<Text>(renderer_, 32); // TODO: Parametrize size
-    text_->SetText(std::to_string(change_amount_));
-    text_->SetCenterPosX(initial_x_, initial_y_);
-    text_->SetColor(color_);
+  MoveBy(T& movable, int delta_x, int delta_y, float speed)
+      : movable_(movable),
+        delta_x_(delta_x),
+        delta_y_(delta_y),
+        speed_x_(delta_x_ * speed),
+        speed_y_(delta_y_ * speed) {
+    std::tie(initial_x_, initial_y_) = movable_.GetPos();
+    if constexpr (flip) {
+      movable.Flip(delta_x_ > 0);
+    }
+    if constexpr (bring_to_top) {
+      movable.BringToTop();
+    }
   }
 
   bool Update(std::chrono::milliseconds delta_time) {
-    auto new_y = current_y_ - speed_ * delta_time.count();
-    text_->SetPos(initial_x_, new_y);
-    current_y_ = new_y;
-    if (std::abs(current_y_ - initial_y_) > 25.f) {
+    auto [x, y] = movable_.GetPos();
+    auto new_x = x + speed_x_ * static_cast<float>(delta_time.count());
+    auto new_y = y + speed_y_ * static_cast<float>(delta_time.count());
+
+    std::cout << "speed_y_: " << speed_y_ << "\n";
+    std::cout << "new_y: " << new_y << "\n";
+
+    movable_.SetPos(new_x, new_y);
+    if (std::abs(new_x - initial_x_) >= std::abs(delta_x_) && std::abs(new_y - initial_y_) >= std::abs(delta_y_)) {
+      movable_.SetPos(initial_x_ + delta_x_, initial_y_ + delta_y_);
+      return true;
+    }
+    return false;
+  }
+
+ private:
+  T& movable_;
+  int initial_x_{0};
+  int initial_y_{0};
+  int delta_x_{0};
+  int delta_y_{0};
+  float speed_x_{0.f};
+  float speed_y_{0.f};
+};
+
+class MoveAnimation {
+  using MoveToT = MoveTo<Entity, true, true>;
+ public:
+  explicit MoveAnimation(Entity& entity, IndexType to_index) {
+    auto [x, y] = IndexToPos(to_index);
+    move_to_ = std::make_unique<MoveToT>(entity, x, y, speed_);
+  }
+
+  bool Update(std::chrono::milliseconds delta_time) {
+    return move_to_->Update(delta_time);
+  }
+
+ private:
+  std::unique_ptr<MoveToT> move_to_;
+  float speed_{0.02f};
+};
+
+class ChangeHealthAnimation {
+  using MoveByT = MoveBy<Text, false, false>;
+ public:
+  explicit ChangeHealthAnimation(Renderer renderer, Entity& entity, HealthType change_amount)
+      : renderer_(renderer), entity_(&entity), change_amount_(change_amount),
+        color_(change_amount < 0 ? Color{173, 32, 14, 255} : Color{47, 117, 66, 255}) {
+
+    auto [x, y] = entity.GetPos();
+    // TODO: this should not be magic number here
+    x += 30;
+    y -= 30;
+
+    text_ = std::make_unique<Text>(renderer_, 32); // TODO: Parametrize size
+    text_->SetText(std::to_string(change_amount_));
+    text_->SetCenterPosX(x, y);
+    text_->SetColor(color_);
+
+    move_by_ = std::make_unique<MoveByT>(*text_, 0, -25, 0.0002f);
+  }
+
+  bool Update(std::chrono::milliseconds delta_time) {
+    if (move_by_->Update(delta_time)) {
       entity_->ChangeHealth(change_amount_);
+      move_by_ = nullptr;
       text_ = nullptr;
       return true;
     }
@@ -99,12 +152,9 @@ class ChangeHealthAnimation {
 
  private:
   Renderer renderer_;
+  std::unique_ptr<MoveByT> move_by_;
   Entity* entity_{nullptr};
   HealthType change_amount_;
-  float initial_x_{0.f};
-  float initial_y_{0.f};
-  float current_y_{0.f};
-  float speed_{0.01f};
   Color color_;
   std::unique_ptr<Text> text_;
 };

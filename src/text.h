@@ -37,6 +37,8 @@ class Text {
 
   void SetBackgroundExtend(int x, int y);
 
+  std::pair<int, int> GetPos() const;
+
   void Draw(Window& window);
 
  private:
