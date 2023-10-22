@@ -108,12 +108,14 @@ struct DummyDrawAnimation : AnimationInterface {
 class MoveAnimation : public DummyDrawAnimation {
   using MoveToT = MoveTo<Entity, true, true>;
  public:
-  explicit MoveAnimation(Entity& entity, IndexType to_index);
+  explicit MoveAnimation(Entity& entity, IndexType target_index);
   bool Update(std::chrono::milliseconds delta_time) override;
 
  private:
+  Entity& entity_;
+  IndexType target_index_;
   std::unique_ptr<MoveToT> move_to_;
-  float speed_{0.02f};
+  float speed_{0.045f};
 };
 
 class ChangeHealthAnimation : public AnimationInterface {
@@ -126,7 +128,7 @@ class ChangeHealthAnimation : public AnimationInterface {
  private:
   Renderer renderer_;
   std::unique_ptr<MoveByT> move_by_;
-  Entity* entity_{nullptr};
+  Entity& entity_;
   HealthType change_amount_;
   Color color_;
   std::unique_ptr<Text> text_;
