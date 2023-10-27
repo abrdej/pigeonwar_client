@@ -36,6 +36,9 @@ void Texture::Draw(Window& window) const {
                        static_cast<int>(rect_.h + 2 * rect_h_scaled_margin)};
 
   SDL_SetTextureAlphaMod(texture_, transparency_);
+  if (multiplier_) {
+    SDL_SetTextureColorMod(texture_, *multiplier_, *multiplier_, *multiplier_);
+  }
 
   SDL_RenderCopyEx(window.GetRenderer().renderer,
                    texture_,
@@ -65,4 +68,12 @@ void Texture::Scale(float factor) {
 
 void Texture::SetTransparency(std::uint8_t alpha) {
   transparency_ = alpha;
+}
+
+void Texture::SetColorMultiplier(std::uint8_t value) {
+  multiplier_ = value;
+}
+
+void Texture::RemoveColorMultiplier() {
+  multiplier_.reset();
 }

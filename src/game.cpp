@@ -300,6 +300,7 @@ void Game::UpdatePanelState() {
   if (entity_properties) {
     panel_->SetCurrentEntity(*entity_properties);
   }
+  panel_->SetLocalState(local_state_);
 }
 
 void Game::EnqueueTalk(const std::string& text, std::chrono::milliseconds hold) {
