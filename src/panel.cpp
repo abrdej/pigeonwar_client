@@ -5,29 +5,32 @@
 
 #include <iostream>
 
-Panel::Panel(Renderer renderer, TextureLoader& texture_loader, int pos_x, int pos_y, int number_of_buttons,
-             int number_of_effects)
+Panel::Panel(Renderer renderer, TextureLoader& texture_loader,
+             int pos_x, int pos_y, int number_of_buttons, int number_of_effects)
     : renderer_(renderer), texture_loader_(texture_loader), pos_x_(pos_x), pos_y_(pos_y) {
-
   background_ = std::make_unique<Texture>(texture_loader_.GetTexture("panel_background"));
   background_->SetPos(0, pos_y);
 
-  auto create_button = [&](const std::string& texture_key, int n, auto callback) {
-    auto& new_button = buttons_.emplace_back(texture_loader.GetTexture(texture_key),
-                                             pos_x + n * 60,
-                                             pos_y + 10,
-                                             60);
-    new_button.OnClicked(callback);
-    new_button.OnIn([this, n](Button& button) {
+  // TODO: How to define buttons layout?
+
+  auto create_button = [&](const std::string& texture_key, int n, ButtonId button_id) {
+    auto& new_button = buttons_.emplace_back(
+        texture_loader.GetTexture(texture_key), pos_x + n * 60, pos_y + 10, 60);
+    new_button.OnClicked([this, button_id](Button& button) {
+      if (on_clicked_) {
+        on_clicked_(button_id);
+      }
+    });
+    new_button.OnIn([this, button_id](Button& button) {
       if (on_in_) {
-        on_in_(n);
+        on_in_(button_id);
       }
       button.GetTexture().Scale(1.2);
     });
-    new_button.OnOut([this, n](Button& button) {
+    new_button.OnOut([this, button_id](Button& button) {
       button.GetTexture().Scale(1.0);
       if (on_out_) {
-        on_out_(n);
+        on_out_(button_id);
       }
     });
     buttons_order_.emplace_back(ButtonOrderHolder{&new_button});
@@ -35,21 +38,12 @@ Panel::Panel(Renderer renderer, TextureLoader& texture_loader, int pos_x, int po
 
   buttons_.reserve(number_of_buttons + number_of_effects + 1u);
   for (int n = 0; n < number_of_buttons; ++n) {
-    create_button("border", n, [this, n](Button& button) {
-      std::cout << "Button: " << n << " clicked\n";
-      on_clicked_(n);
-    });
+    create_button("border", n, AbilityButtonId{n});
   }
   for (int n = 0; n < number_of_effects; ++n) {
-    create_button("border", n + number_of_buttons + 1, [this, n](Button& button) {
-      std::cout << "Effect: " << n << " clicked\n";
-      //on_clicked_(n);
-    });
+    create_button("border", n + number_of_buttons + 1, EffectButtonId{n});
   }
-  create_button("end_turn", number_of_buttons + number_of_effects + 2, [this](Button& button) {
-    std::cout << "End turn clicked\n";
-    on_clicked_(5); // TODO: define button_ids!!!
-  });
+  create_button("end_turn", number_of_buttons + number_of_effects + 2, EndTurnButtonId{});
 }
 
 void Panel::Draw(Window& window) {
@@ -101,17 +95,17 @@ void Panel::SetCurrentEntity(const EntityProperties& entity_properties) {
   auto entity_texture = texture_loader_.GetTexture(entity_properties.name);
   entity_texture.Scale(1.5);
 
+  // TODO: magic numbers here
   entity_button_ = std::make_unique<Button>(entity_texture, 25, 615, 120);
   entity_button_->OnIn([this](Button& button) {
     button.GetTexture().Scale(1.7);
     if (on_in_) {
-      // TODO: clean up button ids
-      on_in_(-1);
+      on_in_(EntityButtonId{});
     }
   });
   entity_button_->OnOut([this](Button& button) {
     if (on_out_) {
-      on_out_(-1);
+      on_out_(EntityButtonId{});
     }
     button.GetTexture().Scale(1.5);
   });
@@ -154,14 +148,14 @@ void Panel::SetLocalState(const LocalGameState& local_game_state) {
   }
 }
 
-void Panel::OnIn(std::function<void(int)> callback) {
+void Panel::OnIn(ButtonCallback callback) {
   on_in_ = std::move(callback);
 }
 
-void Panel::OnOut(std::function<void(int)> callback) {
+void Panel::OnOut(ButtonCallback callback) {
   on_out_ = std::move(callback);
 }
 
-void Panel::OnClicked(std::function<void(int)> callback) {
+void Panel::OnClicked(ButtonCallback callback) {
   on_clicked_ = std::move(callback);
 }

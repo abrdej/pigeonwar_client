@@ -41,6 +41,7 @@ class Game {
   void ProcessCallbacks();
   void ProcessMessage(const std::string& message);
   void SendMessage(const std::string& message);
+  void OnGetHint(ButtonId button_id);
 
   std::chrono::steady_clock::time_point last_update_;
   std::chrono::milliseconds time_since_update_{0};
@@ -60,7 +61,7 @@ class Game {
   std::unique_ptr<Text> talk_;
   MessageProcessor message_processor_;
   std::queue<std::pair<std::string, std::chrono::milliseconds>> text_to_talk_;
-  std::optional<std::pair<TimerOnUpdate, int>> hint_timer_;
+  std::optional<std::pair<TimerOnUpdate, ButtonId>> hint_timer_;
   bool hint_requested_{false};
   std::optional<TimerOnUpdate> talk_timer_;
   std::queue<std::function<void()>> callbacks_;

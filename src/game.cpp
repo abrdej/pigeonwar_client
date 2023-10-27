@@ -29,25 +29,29 @@ Game::Game()
 
   board_ = std::make_unique<Board>(texture_loader_, 15, 10);
   panel_ = std::make_unique<Panel>(window_.GetRenderer(), texture_loader_, 150, 10 * 60, 4, 5);
-  panel_->OnIn([this](int button_id) {
-    hint_timer_.emplace(TimerOnUpdate({[this]() {
-      hint_requested_ = true;
-      nlohmann::json get_entity_description;
-      get_entity_description["get_entity_description"]["client_id"] = client_id_;
-      SendMessage(get_entity_description.dump());
-    }, std::chrono::milliseconds(500)}), button_id);
-  });
-  panel_->OnOut([this](int button_id) {
+  panel_->OnIn([this](auto button_id) { return OnGetHint(button_id); });
+  panel_->OnOut([this](ButtonId button_id) {
     if (hint_timer_ && hint_timer_->second == button_id) {
       hint_timer_ = std::nullopt;
       hint_requested_ = false;
     }
     hint_ = nullptr;
   });
-  panel_->OnClicked([this](int button_id) {
+  panel_->OnClicked([this](ButtonId button_id) {
     nlohmann::json on_button;
     on_button["on_button"]["client_id"] = client_id_;
-    on_button["on_button"]["button"] = button_id;
+
+    std::visit(Overloaded{
+        [&on_button](AbilityButtonId x) {
+          on_button["on_button"]["button"] = x.index;
+        },
+        [&on_button](EndTurnButtonId x) {
+          on_button["on_button"]["button"] = 5;
+        },
+        [](EffectButtonId x) {},
+        [](EntityButtonId x) {}
+    }, button_id);
+
     SendMessage(on_button.dump());
   });
 
@@ -331,4 +335,34 @@ void Game::ProcessMessage(const std::string& str_message) {
 
 void Game::SendMessage(const std::string& message) {
   client_.Send(message);
+}
+
+void Game::OnGetHint(ButtonId button_id) {
+  if (Is<EndTurnButtonId>(button_id)) {
+    return;
+  }
+  auto make_message = [this, button_id]() {
+    nlohmann::json get_hint;
+    std::visit(Overloaded{
+        [this, &get_hint](AbilityButtonId x) {
+          get_hint["get_button_description"]["client_id"] = client_id_;
+          get_hint["get_button_description"]["button"] = x.index;
+        },
+        [this, &get_hint](EffectButtonId x) {
+          get_hint["get_effect_description"]["client_id"] = client_id_;
+          get_hint["get_effect_description"]["effect"] = x.index;
+        },
+        [this, &get_hint](EntityButtonId x) {
+          get_hint["get_entity_description"]["client_id"] = client_id_;
+        },
+        [&get_hint](EndTurnButtonId x) {
+          get_hint["on_button"]["button"] = 5;
+        }
+    }, button_id);
+    return get_hint.dump();
+  };
+  hint_timer_.emplace(TimerOnUpdate({[this, make_message]() {
+    hint_requested_ = true;
+    SendMessage(make_message());
+  }, std::chrono::milliseconds(500)}), button_id);
 }
