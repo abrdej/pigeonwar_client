@@ -38,6 +38,14 @@ void LoadResources(TextureLoader& texture_loader) {
   texture_loader.LoadTexture("end_turn");
   texture_loader.LoadTexture("panel_background");
 
+//  abilities
+  texture_loader.LoadTexture("move");
+  texture_loader.LoadTexture("shoot", "bullet");
+  texture_loader.LoadTexture("grenade");
+
+  texture_loader.LoadTexture("blow_the_ax");
+  texture_loader.LoadTexture("armor");
+
 //  effects
   texture_loader.LoadTexture("bullet");
   texture_loader.LoadTexture("bum");

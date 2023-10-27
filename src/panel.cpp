@@ -58,6 +58,9 @@ void Panel::Draw(Window& window) {
   for (auto& button : buttons_order_) {
     button.button->Draw(window);
   }
+  for (auto& icon : icons_) {
+    icon.Draw(window);
+  }
   if (entity_button_) {
     entity_button_->Draw(window);
   }
@@ -131,6 +134,25 @@ void Panel::SetCurrentEntity(const EntityProperties& entity_properties) {
     entity_power_->SetPos(100, 635);
     entity_power_->SetText(std::to_string(entity_properties.power));
     entity_power_->SetColor(Color{90, 114, 140});
+  }
+}
+
+void Panel::SetLocalState(const LocalGameState& local_game_state) {
+  icons_.clear();
+  for (int i = 0; i < local_game_state.button_bitmaps.size(); ++i) {
+    if (!local_game_state.button_bitmaps[i].empty()) {
+      auto& texture = buttons_[i].GetTexture();
+      auto [x, y] = texture.GetPos();
+      auto& icon = icons_.emplace_back(texture_loader_.GetTexture(local_game_state.button_bitmaps[i]));
+      icon.SetPos(x, y);
+      if (local_game_state.usable[i]) {
+        icon.RemoveColorMultiplier();
+        icon.SetTransparency(255);
+      } else {
+        icon.SetColorMultiplier(30);
+        icon.SetTransparency(75);
+      }
+    }
   }
 }
 

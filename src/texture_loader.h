@@ -14,6 +14,7 @@ class TextureLoader {
   Texture GetTexture(const std::string& texture_key) const;
 
   void LoadTexture(const std::string& texture_key);
+  void LoadTexture(const std::string& texture_key, const std::string& texture_file);
 
  private:
   Window& window_;

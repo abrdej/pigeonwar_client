@@ -15,6 +15,10 @@ void TextureLoader::LoadTexture(const std::string& texture_key) {
   textures_.emplace(texture_key, Texture(window_, resources_directory + texture_key + ".png"));
 }
 
+void TextureLoader::LoadTexture(const std::string& texture_key, const std::string& texture_file) {
+  textures_.emplace(texture_key, Texture(window_, resources_directory + texture_file + ".png"));
+}
+
 Texture TextureLoader::GetTexture(const std::string& texture_key) const {
   try {
     return textures_.at(texture_key);
