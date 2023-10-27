@@ -5,15 +5,6 @@
 
 #include <vector>
 
-enum class ButtonsKeys : std::int32_t {
-  Entity,
-  Ability1,
-  Ability2,
-  Ability3,
-  Ability4,
-  EndTurn
-};
-
 class Window;
 class TextureLoader;
 
