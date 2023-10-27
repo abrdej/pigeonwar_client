@@ -16,8 +16,6 @@ class Texture {
   void Flip(bool flipped);
   void Scale(float factor);
   void SetTransparency(std::uint8_t alpha);
-  void SetColorMultiplier(std::uint8_t value);
-  void RemoveColorMultiplier();
 
  private:
   SDL_Rect rect_;
@@ -26,5 +24,4 @@ class Texture {
   bool flipped_{false};
   float scaling_factor_{1.f};
   std::uint8_t transparency_{255};
-  std::optional<std::uint8_t> multiplier_;
 };
