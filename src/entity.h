@@ -21,6 +21,8 @@ class Entity {
 
   void SetIndex(IndexType index);
 
+  void SetPlayer(PlayerIdType player_id);
+
   void Flip(bool flip);
 
   void BringToTop();
@@ -33,7 +35,7 @@ class Entity {
 //  void ChangePower(std::int32_t amount);
 //  void SetColorForHealth();
 //  void SetPosition(std::int32_t x, std::int32_t y);
-//  void SetPlayer(std::int32_t player_id);
+
 
   std::pair<float, float> GetPos() const;
 
@@ -59,10 +61,8 @@ class Entity {
   float x_{0.f};
   float y_{0.f};
 
-  std::int32_t player_id_{0};
-  std::int32_t pos_x_{0};
-  std::int32_t pox_y_{0};
-  bool is_tweening_{false};
+  PlayerIdType player_id_{no_player};
+
   inline static int initial_order = 0;
   int order_{0};
 
