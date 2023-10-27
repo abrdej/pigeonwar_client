@@ -31,15 +31,16 @@ Game::Game()
   panel_ = std::make_unique<Panel>(window_.GetRenderer(), texture_loader_, 150, 10 * 60, 4, 5);
   panel_->OnIn([this](int button_id) {
     hint_timer_.emplace(TimerOnUpdate({[this]() {
-      // Test hint
-      nlohmann::json hint;
-      hint["hint"] = "In the heat of battle, Golem's resilience soars, turning him into an indomitable fortress.";
-      message_processor_.Process(hint);
+      hint_requested_ = true;
+      nlohmann::json get_entity_description;
+      get_entity_description["get_entity_description"]["client_id"] = client_id_;
+      SendMessage(get_entity_description.dump());
     }, std::chrono::milliseconds(500)}), button_id);
   });
   panel_->OnOut([this](int button_id) {
     if (hint_timer_ && hint_timer_->second == button_id) {
       hint_timer_ = std::nullopt;
+      hint_requested_ = false;
     }
     hint_ = nullptr;
   });
@@ -68,7 +69,9 @@ Game::Game()
   });
   message_processor_.OnMessage(hint_message, [this](const auto& message) {
     std::string hint = message;
-    if (!hint.empty() && hint_timer_.has_value()) {
+    std::cout << "Got hint message: " << hint << "\n";
+    if (!hint.empty() && hint_requested_) {
+      std::cout << "Creating a hint\n";
       hint_ = MakeHint(window_.GetRenderer(), hint);
     }
   });
@@ -112,18 +115,6 @@ Game::Game()
   window_.OnMouseMove([this](int x, int y) {
     panel_->InteractMove(x, y);
   });
-
-//  animation_ = std::make_unique<MoveAnimation>();
-//  animation_->to_index = 17;
-//  std::cout << "handle\n";
-//  animation_->Handle(entities_collection_.Get(0));
-//  std::cout << "handle2\n";
-//
-//  scale_animation_ = std::make_unique<ScaleAnimation>();
-//  scale_animation_->Handle(entities_collection_.Get(1));
-//
-//  transparency_animation_ = std::make_unique<TransparencyAnimation>();
-//  transparency_animation_->Handle(entities_collection_.Get(1));
 
   client_.OnMessage([this](const std::string& message) {
     ProcessMessage(message);
