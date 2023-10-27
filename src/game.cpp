@@ -217,8 +217,6 @@ void Game::OnEntityPack(const MessageType& message) {
   for (const auto& [entity_id, entity_data] : entity_pack) {
     entities_collection_.Add(entity_id, entity_data);
   }
-  // TODO: check if this will be required
-//    BringEntitiesToTop();
 }
 
 void Game::OnLocalState(const MessageType& message) {
@@ -229,15 +227,17 @@ void Game::OnLocalState(const MessageType& message) {
 
 void Game::OnGlobalState(const MessageType& message) {
   global_state_ = message;
-  // TODO: do we need this
-//    for (const auto [entity_id, player_id] : global_state_.entities_players) {
-//      entities_collection_.Get(entity_id).SetPlayer(player_id);
-//    }
+
+  for (auto [entity_id, player_id] : global_state_.entities_players) {
+    entities_collection_.Get(entity_id).SetPlayer(player_id);
+  }
 }
 
 void Game::OnAnimation(const MessageType& message) {
   std::string animation = message[0];
   if (animation == "move") {
+    ClearSelectedIndex();
+
     EntityIdType entity_id = message[1];
     IndexType index = message[2];
     animations_.emplace_back(
@@ -365,4 +365,9 @@ void Game::OnGetHint(ButtonId button_id) {
     hint_requested_ = true;
     SendMessage(make_message());
   }, std::chrono::milliseconds(500)}), button_id);
+}
+
+void Game::ClearSelectedIndex() {
+  local_state_.selected_index = no_index;
+  UpdateBoardState();
 }

@@ -8,6 +8,15 @@
 // - power text font size
 // - power text pos offset
 
+Color GetHealthBackgroundColorForPlayer(PlayerIdType player_id) {
+  if (player_id == 0) {
+    return {173, 204, 176, 15};
+  } else if (player_id == 1) {
+    return {173, 190, 204, 15};
+  } else {
+    return {224, 224, 224, 15};
+  }
+}
 
 Entity::Entity(Renderer renderer, const TextureLoader& texture_loader, const EntityProperties& entity_properties)
     : entity_properties_(entity_properties) {
@@ -23,7 +32,7 @@ Entity::Entity(Renderer renderer, const TextureLoader& texture_loader, const Ent
     health_text_->SetText(std::to_string(entity_properties_.health));
     health_text_->SetColor(Color{20, 35, 60});
     health_text_->DrawBackground(true);
-    health_text_->SetBackgroundColor(Color{141, 166, 146, 25});
+    health_text_->SetBackgroundColor(GetHealthBackgroundColorForPlayer(no_player));
     UpdateHealthPos();
   }
 
@@ -53,6 +62,13 @@ void Entity::SetIndex(IndexType index) {
   entity_properties_.index = index;
   auto [x, y] = IndexToPos(index);
   SetPos(x, y);
+}
+
+void Entity::SetPlayer(PlayerIdType player_id) {
+  player_id_ = player_id;
+  if (health_text_) {
+    health_text_->SetBackgroundColor(GetHealthBackgroundColorForPlayer(player_id));
+  }
 }
 
 void Entity::Flip(bool flip) {

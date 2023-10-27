@@ -42,6 +42,7 @@ class Game {
   void ProcessMessage(const std::string& message);
   void SendMessage(const std::string& message);
   void OnGetHint(ButtonId button_id);
+  void ClearSelectedIndex();
 
   std::chrono::steady_clock::time_point last_update_;
   std::chrono::milliseconds time_since_update_{0};
