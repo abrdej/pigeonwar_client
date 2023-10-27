@@ -17,6 +17,7 @@ class EntitiesCollection {
   std::optional<EntityProperties> EntityPropertiesForIndex(IndexType index) const;
   void Remove(EntityIdType entity_id);
   void Draw(Window& window);
+  void SortEntitiesOrder();
 
  private:
   [[noreturn]] static void ThrowEntityIdNotExists(EntityIdType entity_id);

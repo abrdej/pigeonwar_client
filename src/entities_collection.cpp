@@ -3,6 +3,8 @@
 #include <texture_loader.h>
 #include <window.h>
 
+#include <map>
+
 EntitiesCollection::EntitiesCollection(const Window& window, const TextureLoader& texture_loader)
     : window_(window), texture_loader_(texture_loader) {
 }
@@ -53,6 +55,21 @@ void EntitiesCollection::Draw(Window& window) {
   });
   for (const auto& entity : sorted_entities) {
     entity->Draw(window);
+  }
+}
+
+void EntitiesCollection::SortEntitiesOrder() {
+  std::map<IndexType, std::vector<EntityIdType>> sorted_entities;
+  for (const auto& [entity_id, entity] : entities_) {
+    sorted_entities[entity.GetProperties().index].push_back(entity_id);
+  }
+  for (auto& [index, entities] : sorted_entities) {
+    std::sort(std::begin(entities), std::end(entities), [this](const EntityIdType& e1, const EntityIdType& e2) {
+      return Get(e1).GetOrder() < Get(e2).GetOrder();
+    });
+    for (auto entity_id : entities) {
+      Get(entity_id).BringToTop();
+    }
   }
 }
 

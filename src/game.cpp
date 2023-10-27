@@ -217,6 +217,7 @@ void Game::OnEntityPack(const MessageType& message) {
   for (const auto& [entity_id, entity_data] : entity_pack) {
     entities_collection_.Add(entity_id, entity_data);
   }
+  entities_collection_.SortEntitiesOrder();
 }
 
 void Game::OnLocalState(const MessageType& message) {
