@@ -143,7 +143,7 @@ void LoopHandler(void* game) {
 #endif
 
 void Game::Run() {
-  last_update_ = std::chrono::system_clock::now();
+  last_update_ = std::chrono::steady_clock::now();
 
 #ifdef EMSCRIPTEN
   emscripten_set_main_loop_arg(LoopHandler, this, 0, 1);
@@ -155,16 +155,19 @@ void Game::Run() {
 }
 
 void Game::ExecuteLoop() {
-  client_.Update(1);
-  window_.ProcessEvents();
-
-  auto now = std::chrono::system_clock::now();
+  if (animations_.empty()) {
+    client_.Update(1);
+    window_.ProcessEvents();
+  }
+  auto now = std::chrono::steady_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(now - last_update_);
   time_since_update_ += duration;
   while (time_since_update_ > time_per_frame_) {
     last_update_ = now;
     time_since_update_ -= time_per_frame_;
-    window_.ProcessEvents();
+    if (animations_.empty()) {
+      window_.ProcessEvents();
+    }
     Update(time_per_frame_);
   }
   Render();
@@ -250,8 +253,12 @@ void Game::OnAnimation(const MessageType& message) {
     HealthType change_amount = message[2];
     animations_.emplace_back(
         std::make_unique<ChangeHealthAnimation>(window_.GetRenderer(),
-                                                entities_collection_.Get(entity_id),
-                                                change_amount));
+                                                entities_collection_.Get(entity_id), change_amount));
+  } else if (animation == "shoot") {
+    IndexType source_index = message[1];
+    IndexType target_index = message[2];
+    animations_.emplace_back(
+        std::make_unique<ShotAnimation>(texture_loader_, source_index, target_index));
   }
 }
 

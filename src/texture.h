@@ -9,7 +9,7 @@ class Window;
 class Texture {
  public:
   explicit Texture(Window& window, const std::string &texture_file);
-  void Draw(Window& window);
+  void Draw(Window& window) const;
   void SetPos(int x, int y);
   std::pair<int, int> GetPos() const;
   void Flip(bool flipped);

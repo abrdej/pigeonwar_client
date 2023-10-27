@@ -34,14 +34,14 @@ class MoveTo {
   bool Update(std::chrono::milliseconds delta_time) {
     auto [x, y] = movable_.GetPos();
 
-    auto pos_x = x + speed_ * delta_x_ * static_cast<float>(delta_time.count());
-    auto pos_y = y + speed_ * delta_y_ * static_cast<float>(delta_time.count());
+    auto movement_x = speed_ * delta_x_ * static_cast<float>(delta_time.count());
+    auto movement_y = speed_ * delta_y_ * static_cast<float>(delta_time.count());
 
-    if (std::abs(pos_x - target_x_) < 2.5 && std::abs(pos_y - target_y_) < 2.5) {
+    if (std::abs(x - target_x_) <= std::abs(movement_x) && std::abs(y - target_y_) <= std::abs(movement_y)) {
       movable_.SetPos(target_x_, target_y_);
       return true;
     } else {
-      movable_.SetPos(pos_x, pos_y);
+      movable_.SetPos(x + movement_x, y + movement_y);
       return false;
     }
   }
@@ -78,9 +78,6 @@ class MoveBy {
     auto new_x = x + speed_x_ * static_cast<float>(delta_time.count());
     auto new_y = y + speed_y_ * static_cast<float>(delta_time.count());
 
-    std::cout << "speed_y_: " << speed_y_ << "\n";
-    std::cout << "new_y: " << new_y << "\n";
-
     movable_.SetPos(new_x, new_y);
     if (std::abs(new_x - initial_x_) >= std::abs(delta_x_) && std::abs(new_y - initial_y_) >= std::abs(delta_y_)) {
       movable_.SetPos(initial_x_ + delta_x_, initial_y_ + delta_y_);
@@ -115,7 +112,7 @@ class MoveAnimation : public DummyDrawAnimation {
   Entity& entity_;
   IndexType target_index_;
   std::unique_ptr<MoveToT> move_to_;
-  float speed_{0.045f};
+  float speed_{0.01f};
 };
 
 class ChangeHealthAnimation : public AnimationInterface {
@@ -132,6 +129,33 @@ class ChangeHealthAnimation : public AnimationInterface {
   HealthType change_amount_;
   Color color_;
   std::unique_ptr<Text> text_;
+};
+
+class ShotBaseAnimation : public AnimationInterface {
+  using MoveToT = MoveTo<Texture, true, false>;
+ public:
+  ShotBaseAnimation(TextureLoader& texture_loader,
+                    IndexType source_index,
+                    IndexType target_index,
+                    float speed,
+                    const std::string& bullet_key,
+                    const std::optional<std::string>& explosion_key = std::nullopt,
+                    const std::optional<std::chrono::milliseconds>& explosion_duration = std::nullopt);
+  bool Update(std::chrono::milliseconds delta_time) override;
+  void Draw(Window& window) const override;
+
+ private:
+  std::unique_ptr<MoveToT> move_to_;
+  std::optional<Texture> bullet_texture_;
+  std::optional<Texture> explosion_texture_;
+  std::optional<std::chrono::milliseconds> explosion_duration_;
+  std::chrono::steady_clock::time_point explode_until_;
+};
+
+struct ShotAnimation : ShotBaseAnimation {
+  ShotAnimation(TextureLoader& texture_loader,
+                IndexType source_index,
+                IndexType target_index);
 };
 
 struct ScaleAnimation {

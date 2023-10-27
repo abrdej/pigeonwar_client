@@ -37,4 +37,8 @@ void LoadResources(TextureLoader& texture_loader) {
   texture_loader.LoadTexture("border");
   texture_loader.LoadTexture("end_turn");
   texture_loader.LoadTexture("panel_background");
+
+//  effects
+  texture_loader.LoadTexture("bullet");
+  texture_loader.LoadTexture("bum");
 }

@@ -1,5 +1,19 @@
 #include <animation.h>
 
+#include <utils.h>
+
+namespace {
+
+struct TextureGetter {
+  explicit TextureGetter(TextureLoader& texture_loader) : texture_loader_(texture_loader) {}
+  auto operator()(const std::string& texture_key) const {
+    return texture_loader_.GetTexture(texture_key);
+  }
+  TextureLoader& texture_loader_;
+};
+
+}  // namespace
+
 MoveAnimation::MoveAnimation(Entity& entity, IndexType target_index)
     : entity_(entity), target_index_(target_index) {
   auto [x, y] = IndexToPos(target_index_);
@@ -46,6 +60,65 @@ void ChangeHealthAnimation::Draw(Window& window) const {
     text_->Draw(window);
   }
 }
+
+ShotBaseAnimation::ShotBaseAnimation(
+    TextureLoader& texture_loader,
+    IndexType source_index,
+    IndexType target_index,
+    float speed,
+    const std::string& bullet_key,
+    const std::optional<std::string>& explosion_key,
+    const std::optional<std::chrono::milliseconds>& explosion_duration)
+    : bullet_texture_(texture_loader.GetTexture(bullet_key)),
+      explosion_texture_(AndThen(explosion_key, TextureGetter(texture_loader))),
+      explosion_duration_(explosion_duration) {
+  auto [source_x, source_y] = IndexToPos(source_index);
+  auto [target_x, target_y] = IndexToPos(target_index);
+  bullet_texture_->SetPos(source_x, source_y);
+  bullet_texture_->Flip(source_x - target_x > 0);
+  move_to_ = std::make_unique<MoveToT>(*bullet_texture_, target_x, target_y, speed);
+
+  if (explosion_texture_ && !explosion_duration_) {
+    explosion_texture_.reset();
+  }
+  if (explosion_texture_ && explosion_duration_) {
+    explosion_texture_->SetPos(target_x, target_y);
+  }
+}
+
+bool ShotBaseAnimation::Update(std::chrono::milliseconds delta_time) {
+  if (move_to_) {
+    if (move_to_->Update(delta_time)) {
+      bullet_texture_.reset();
+      move_to_ = nullptr;
+      if (explosion_texture_ && explosion_duration_) {
+        explode_until_ = std::chrono::steady_clock::now() + *explosion_duration_;
+        return false;
+      }
+      return true;
+    }
+  } else if (explosion_texture_) {
+    if (std::chrono::steady_clock::now() >= explode_until_) {
+      explosion_texture_.reset();
+      return true;
+    }
+  }
+  return false;
+}
+
+void ShotBaseAnimation::Draw(Window& window) const {
+  if (bullet_texture_) {
+    bullet_texture_->Draw(window);
+  } else if (explosion_texture_) {
+    explosion_texture_->Draw(window);
+  }
+}
+
+ShotAnimation::ShotAnimation(TextureLoader& texture_loader,
+                             IndexType source_index,
+                             IndexType target_index)
+    : ShotBaseAnimation(texture_loader, source_index, target_index, 0.0175, "bullet", "bum",
+                        std::chrono::milliseconds(150)) {}
 
 void ScaleAnimation::Handle(Entity& entity) {
   entity_ = &entity;
