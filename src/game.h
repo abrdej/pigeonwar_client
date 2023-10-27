@@ -61,6 +61,7 @@ class Game {
   MessageProcessor message_processor_;
   std::queue<std::pair<std::string, std::chrono::milliseconds>> text_to_talk_;
   std::optional<std::pair<TimerOnUpdate, int>> hint_timer_;
+  bool hint_requested_{false};
   std::optional<TimerOnUpdate> talk_timer_;
   std::queue<std::function<void()>> callbacks_;
 
