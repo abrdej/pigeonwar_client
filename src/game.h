@@ -42,7 +42,7 @@ class Game {
   void ProcessMessage(const std::string& message);
   void SendMessage(const std::string& message);
 
-  std::chrono::system_clock::time_point last_update_;
+  std::chrono::steady_clock::time_point last_update_;
   std::chrono::milliseconds time_since_update_{0};
   std::chrono::milliseconds time_per_frame_{100};
 

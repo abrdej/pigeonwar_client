@@ -26,7 +26,7 @@ Texture::Texture(Window& window, const std::string &texture_file) {
   SDL_FreeSurface(image);
 }
 
-void Texture::Draw(Window& window) {
+void Texture::Draw(Window& window) const {
   const float rect_w_scaled_margin = (scaling_factor_ * rect_.w - rect_.w) / 2;
   const float rect_h_scaled_margin = (scaling_factor_ * rect_.h - rect_.h) / 2;
 
