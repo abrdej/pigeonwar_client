@@ -146,10 +146,8 @@ void Panel::SetLocalState(const LocalGameState& local_game_state) {
       auto& icon = icons_.emplace_back(texture_loader_.GetTexture(local_game_state.button_bitmaps[i]));
       icon.SetPos(x, y);
       if (local_game_state.usable[i]) {
-        icon.RemoveColorMultiplier();
         icon.SetTransparency(255);
       } else {
-        icon.SetColorMultiplier(30);
         icon.SetTransparency(75);
       }
     }

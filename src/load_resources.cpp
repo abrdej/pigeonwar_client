@@ -40,11 +40,35 @@ void LoadResources(TextureLoader& texture_loader) {
 
 //  abilities
   texture_loader.LoadTexture("move");
+
   texture_loader.LoadTexture("shoot", "bullet");
   texture_loader.LoadTexture("grenade");
 
   texture_loader.LoadTexture("blow_the_ax");
   texture_loader.LoadTexture("armor");
+
+  texture_loader.LoadTexture("drain");
+  texture_loader.LoadTexture("counterattack");
+
+  texture_loader.LoadTexture("magic_bullet");
+
+  texture_loader.LoadTexture("power_bullet");
+  texture_loader.LoadTexture("stone_skin");
+
+  texture_loader.LoadTexture("poisoned_missile");
+
+  texture_loader.LoadTexture("invisibility");
+  texture_loader.LoadTexture("sabers");
+
+  texture_loader.LoadTexture("sword_blow");
+  texture_loader.LoadTexture("dodge");
+
+  texture_loader.LoadTexture("hypnosis");
+  texture_loader.LoadTexture("sniper_shot", "sniper_bullet");
+
+  texture_loader.LoadTexture("claws");
+
+  texture_loader.LoadTexture("tongue_of_fire");
 
 //  effects
   texture_loader.LoadTexture("bullet");
