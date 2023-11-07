@@ -47,12 +47,12 @@ void Texture::Draw(Window& window) const {
 }
 
 void Texture::SetPos(int x, int y) {
-  rect_.x = x;
-  rect_.y = y;
+  rect_.x = x - anchor_.x * rect_.w;
+  rect_.y = y - anchor_.y * rect_.h;
 }
 
 std::pair<int, int> Texture::GetPos() const {
-  return {rect_.x, rect_.y};
+  return {rect_.x + anchor_.x * rect_.w, rect_.y + anchor_.y * rect_.h};
 }
 
 void Texture::Flip(bool flipped) {
@@ -65,4 +65,11 @@ void Texture::Scale(float factor) {
 
 void Texture::SetTransparency(std::uint8_t alpha) {
   transparency_ = alpha;
+}
+
+void Texture::SetAnchor(float x, float y) {
+  anchor_.x = x;
+  anchor_.y = y;
+  rect_.x = x - anchor_.x * rect_.w;
+  rect_.y = y - anchor_.y * rect_.h;
 }

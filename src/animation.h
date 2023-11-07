@@ -62,8 +62,8 @@ class MoveBy {
       : movable_(movable),
         delta_x_(delta_x),
         delta_y_(delta_y),
-        speed_x_(delta_x_ * speed),
-        speed_y_(delta_y_ * speed) {
+        speed_x_(delta_x_ * speed * 0.001),
+        speed_y_(delta_y_ * speed * 0.001) {
     std::tie(initial_x_, initial_y_) = movable_.GetPos();
     if constexpr (flip) {
       movable.Flip(delta_x_ > 0);
@@ -77,7 +77,6 @@ class MoveBy {
     auto [x, y] = movable_.GetPos();
     auto new_x = x + speed_x_ * static_cast<float>(delta_time.count());
     auto new_y = y + speed_y_ * static_cast<float>(delta_time.count());
-
     movable_.SetPos(new_x, new_y);
     if (std::abs(new_x - initial_x_) >= std::abs(delta_x_) && std::abs(new_y - initial_y_) >= std::abs(delta_y_)) {
       movable_.SetPos(initial_x_ + delta_x_, initial_y_ + delta_y_);

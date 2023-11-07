@@ -25,6 +25,7 @@ Entity::Entity(Renderer renderer, const TextureLoader& texture_loader, const Ent
 // 2. Create sprite: set pos and texture key
   texture_ = std::make_unique<Texture>(texture_loader.GetTexture(entity_properties.name));
   std::tie(x_, y_) = IndexToPos(entity_properties.index);
+  texture_->SetAnchor(0.5f, 0.5f);
   texture_->SetPos(x_, y_);
 
   if (entity_properties_.health != no_health) {
