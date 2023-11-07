@@ -42,7 +42,7 @@ ChangeHealthAnimation::ChangeHealthAnimation(Renderer renderer, Entity& entity, 
   text_->SetCenterPosX(x, y);
   text_->SetColor(color_);
 
-  move_by_ = std::make_unique<MoveByT>(*text_, 0, -25, 0.0002f);
+  move_by_ = std::make_unique<MoveByT>(*text_, 0, -25, 0.00001f);
 }
 
 bool ChangeHealthAnimation::Update(std::chrono::milliseconds delta_time) {
@@ -74,6 +74,7 @@ ShotBaseAnimation::ShotBaseAnimation(
       explosion_duration_(explosion_duration) {
   auto [source_x, source_y] = IndexToPos(source_index);
   auto [target_x, target_y] = IndexToPos(target_index);
+  bullet_texture_->SetAnchor(0.5f, 0.5f);
   bullet_texture_->SetPos(source_x, source_y);
   bullet_texture_->Flip(source_x - target_x > 0);
   move_to_ = std::make_unique<MoveToT>(*bullet_texture_, target_x, target_y, speed);
@@ -82,6 +83,7 @@ ShotBaseAnimation::ShotBaseAnimation(
     explosion_texture_.reset();
   }
   if (explosion_texture_ && explosion_duration_) {
+    explosion_texture_->SetAnchor(0.5f, 0.5f);
     explosion_texture_->SetPos(target_x, target_y);
   }
 }

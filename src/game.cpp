@@ -100,7 +100,7 @@ Game::Game()
 
   window_.OnMousePressed([this](int x, int y) {
     if (board_->Clicked(x, y)) {
-      std::int32_t index = PosToIndex(x, y);
+      std::int32_t index = ScreenPosToIndex(x, y);
       std::cout << "Clicked board on index: " << index << "\n";
 
       nlohmann::json on_board;
