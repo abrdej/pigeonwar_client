@@ -16,7 +16,8 @@
 std::unique_ptr<Text> MakeHint(Renderer renderer, const std::string& hint_message) {
   auto hint = std::make_unique<Text>(renderer, 20);
   hint->SetText(hint_message);
-  hint->SetCenterPosX(15 * 60 / 2, 10 / 2 * 60);
+  hint->SetAnchor(0.5, 0.0);
+  hint->SetPos(15 * 60 / 2, 10 / 2 * 60);
   hint->DrawBackground(true);
   hint->SetBackgroundColor(Color{235, 235, 235});
   hint->SetBackgroundExtend(10, 10);

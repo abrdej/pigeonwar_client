@@ -33,15 +33,13 @@ ChangeHealthAnimation::ChangeHealthAnimation(Renderer renderer, Entity& entity, 
       color_(change_amount < 0 ? Color{173, 32, 14, 255} : Color{47, 117, 66, 255}) {
 
   auto [x, y] = entity.GetPos();
-  // TODO: this should not be magic number here
-  x += 30;
-  y -= 30;
-
   text_ = std::make_unique<Text>(renderer_, 32); // TODO: Parametrize size
   text_->SetText(std::to_string(change_amount_));
-  text_->SetCenterPosX(x, y);
+  text_->SetAnchor(0.5, 1.0);
+  text_->SetPos(x, y);
   text_->SetColor(color_);
 
+  // TODO: speed here is not ok
   move_by_ = std::make_unique<MoveByT>(*text_, 0, -25, 0.00001f);
 }
 

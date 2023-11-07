@@ -19,15 +19,16 @@ void Text::SetText(const std::string& text) {
 }
 
 void Text::SetPos(int x, int y) {
-  message_rect_.x = x;
-  message_rect_.y = y;
+  message_rect_.x = x - anchor_.x * message_rect_.w;
+  message_rect_.y = y - anchor_.y * message_rect_.h;
   UpdateBackgroundRect();
 }
 
-void Text::SetCenterPosX(int x, int y) {
-  message_rect_.x = x - message_rect_.w / 2;
-  message_rect_.y = y;
-  UpdateBackgroundRect();
+void Text::SetAnchor(float x, float y) {
+  anchor_.x = x;
+  anchor_.y = y;
+  message_rect_.x = x - anchor_.x * message_rect_.w;
+  message_rect_.y = y - anchor_.y * message_rect_.h;
 }
 
 void Text::SetColor(const Color& color) {
@@ -50,7 +51,7 @@ void Text::SetBackgroundExtend(int x, int y) {
 }
 
 std::pair<int, int> Text::GetPos() const {
-  return {message_rect_.x, message_rect_.y};
+  return {message_rect_.x + anchor_.x * message_rect_.w, message_rect_.y + anchor_.y * message_rect_.h};
 }
 
 void Text::Draw(Window& window) {
