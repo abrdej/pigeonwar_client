@@ -27,7 +27,7 @@ class Text {
 
   void SetPos(int x, int y);
 
-  void SetCenterPosX(int x, int y);
+  void SetAnchor(float x, float y);
 
   void SetColor(const Color& color);
 
@@ -52,6 +52,7 @@ class Text {
   SDL_Surface* surface_message_{nullptr};
   SDL_Texture* message_{nullptr};
   SDL_Rect message_rect_{};
+  SDL_FPoint anchor_{};
   SDL_Color background_color_{0, 0, 0};
   bool background_{false};
   SDL_Rect background_rect_;

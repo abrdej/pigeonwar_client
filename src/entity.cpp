@@ -119,13 +119,15 @@ int Entity::GetOrder() const {
 
 void Entity::UpdateHealthPos() {
   if (health_text_) {
-    health_text_->SetCenterPosX(x_ + 30, y_ + 30 - 55);
+    health_text_->SetAnchor(0.5, 0.0);
+    health_text_->SetPos(x_, y_ - 55);
   }
 }
 
 void Entity::UpdatePowerPos() {
 //  if (power_text_) {
-//    power_text_->SetCenterPosX(x_ + 30, y_ + 30 - 55);
+//    power_text_->SetAnchor(0.5, 0.0);
+//    power_text_->SetPos(x_, y_ - 55);
 //  }
 }
 
