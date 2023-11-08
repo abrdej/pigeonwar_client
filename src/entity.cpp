@@ -26,7 +26,7 @@ Entity::Entity(Renderer renderer, const TextureLoader& texture_loader, const Ent
   texture_ = std::make_unique<Texture>(texture_loader_.GetTexture(texture_key_));
   std::tie(x_, y_) = IndexToPos(entity_properties.index);
   texture_->SetAnchor(0.5f, 0.5f);
-  texture_->SetPos(x_, y_);
+  texture_->SetPos(static_cast<int>(x_), static_cast<int>(y_));
 
   if (entity_properties_.health != no_health) {
     health_text_ = std::make_unique<Text>(renderer, 24);
@@ -62,7 +62,7 @@ void Entity::Draw(Window& window) {
 void Entity::SetIndex(IndexType index) {
   entity_properties_.index = index;
   auto [x, y] = IndexToPos(index);
-  SetPos(x, y);
+  SetPos(static_cast<float>(x), static_cast<float>(y));
 }
 
 void Entity::SetPlayer(PlayerIdType player_id) {
@@ -91,18 +91,18 @@ void Entity::ChangeTexture(TextureKey texture_key) {
   texture_key_ = std::move(texture_key);
   texture_ = std::make_unique<Texture>(texture_loader_.GetTexture(texture_key_));
   texture_->SetAnchor(0.5f, 0.5f);
-  texture_->SetPos(x_, y_);
+  texture_->SetPos(static_cast<int>(x_), static_cast<int>(y_));
   texture_->Flip(flip_);
 }
 
 void Entity::RevertTexture() {
   texture_ = std::move(texture_backup_);
   texture_->SetAnchor(0.5f, 0.5f);
-  texture_->SetPos(x_, y_);
+  texture_->SetPos(static_cast<int>(x_), static_cast<int>(y_));
   texture_->Flip(flip_);
 }
 
-std::pair<int, int> Entity::GetPos() const {
+std::pair<float, float> Entity::GetPos() const {
   return {x_, y_};
 }
 
@@ -110,10 +110,10 @@ EntityProperties Entity::GetProperties() const {
   return entity_properties_;
 }
 
-void Entity::SetPos(int x, int y) {
+void Entity::SetPos(float x, float y) {
   x_ = x;
   y_ = y;
-  texture_->SetPos(x_, y_);
+  texture_->SetPos(static_cast<int>(x_), static_cast<int>(y_));
   UpdateHealthPos();
   UpdatePowerPos();
 }
@@ -137,7 +137,7 @@ int Entity::GetOrder() const {
 void Entity::UpdateHealthPos() {
   if (health_text_) {
     health_text_->SetAnchor(0.5, 0.0);
-    health_text_->SetPos(x_, y_ - 55);
+    health_text_->SetPos(static_cast<int>(x_), static_cast<int>(y_) - 55);
   }
 }
 
