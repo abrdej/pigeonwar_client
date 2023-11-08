@@ -14,6 +14,63 @@ struct TextureGetter {
 
 }  // namespace
 
+bool QueuedAnimation::Update(std::chrono::milliseconds delta_time) {
+  if (animation_queue_.empty()) {
+    return true;
+  }
+  auto& animation = animation_queue_.front();
+  if (animation->Update(delta_time)) {
+    animation_queue_.pop_front();
+  }
+  return false;
+}
+
+void QueuedAnimation::Draw(Window& window) const {
+  if (animation_queue_.empty()) {
+    return;
+  }
+  animation_queue_.front()->Draw(window);
+}
+
+void QueuedAnimation::PushBack(std::unique_ptr<AnimationInterface> animation) {
+  animation_queue_.emplace_back(std::move(animation));
+}
+
+void QueuedAnimation::PushFront(std::unique_ptr<AnimationInterface> animation) {
+  animation_queue_.emplace_front(std::move(animation));
+}
+
+bool QueuedFactoryAnimation::Update(std::chrono::milliseconds delta_time) {
+  if (!current_animation_) {
+    if (factories_queue_.empty()) {
+      return true;
+    }
+    std::cout << "Getting next factory from queue\n";
+    auto& animation_factory = factories_queue_.front();
+    current_animation_ = animation_factory();
+    factories_queue_.pop_front();
+  }
+  if (current_animation_ && current_animation_->Update(delta_time)) {
+    std::cout << "Animation finished\n";
+    current_animation_ = nullptr;
+  }
+  return false;
+}
+
+void QueuedFactoryAnimation::Draw(Window& window) const {
+  if (current_animation_) {
+    current_animation_->Draw(window);
+  }
+}
+
+void QueuedFactoryAnimation::ScheduleBack(AnimationFactory animation_factory) {
+  factories_queue_.emplace_back(std::move(animation_factory));
+}
+
+void QueuedFactoryAnimation::ScheduleFront(AnimationFactory animation_factory) {
+  factories_queue_.emplace_front(std::move(animation_factory));
+}
+
 MoveAnimation::MoveAnimation(Entity& entity, IndexType target_index)
     : entity_(entity), target_index_(target_index) {
   auto [x, y] = IndexToPos(target_index_);
@@ -64,8 +121,8 @@ ShotBaseAnimation::ShotBaseAnimation(
     IndexType source_index,
     IndexType target_index,
     float speed,
-    const std::string& bullet_key,
-    const std::optional<std::string>& explosion_key,
+    const TextureKey& bullet_key,
+    const std::optional<TextureKey>& explosion_key,
     const std::optional<std::chrono::milliseconds>& explosion_duration)
     : bullet_texture_(texture_loader.GetTexture(bullet_key)),
       explosion_texture_(AndThen(explosion_key, TextureGetter(texture_loader))),
@@ -112,6 +169,35 @@ void ShotBaseAnimation::Draw(Window& window) const {
   } else if (explosion_texture_) {
     explosion_texture_->Draw(window);
   }
+}
+
+// TODO: add support for moving_key
+MoveAndReturnBaseAnimation::MoveAndReturnBaseAnimation(Entity& entity,
+                                                       IndexType target_index,
+                                                       float speed,
+                                                       const std::optional<IndexType>& return_index,
+                                                       const std::optional<TextureKey>& flush_key,
+                                                       const std::optional<TextureKey>& moving_key)
+    : entity_(entity), target_index_(target_index), speed_(speed) {
+
+  ScheduleBack([this]() {
+    auto [x, y] = IndexToPos(target_index_);
+    return std::make_unique<MoveToT>(entity_, x, y, speed_);
+  });
+
+  if (flush_key) {
+    ScheduleBack([this, flush_key]() {
+      return std::make_unique<FlushTexture>(entity_, *flush_key, std::chrono::milliseconds(200));
+    });
+  }
+
+  const auto [x, y] = entity_.GetPos();
+  ScheduleBack([this, return_index, x_ = x, y_ = y]() mutable {
+    if (return_index) {
+      std::tie(x_, y_) = IndexToPos(*return_index);
+    }
+    return std::make_unique<MoveToT>(entity_, x_, y_, speed_);
+  });
 }
 
 ShotAnimation::ShotAnimation(TextureLoader& texture_loader,

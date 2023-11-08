@@ -36,12 +36,15 @@ class Entity {
 //  void SetColorForHealth();
 //  void SetPosition(std::int32_t x, std::int32_t y);
 
+  void ChangeTexture(TextureKey texture_key);
 
-  std::pair<float, float> GetPos() const;
+  void RevertTexture();
+
+  std::pair<int, int> GetPos() const;
 
   EntityProperties GetProperties() const;
 
-  void SetPos(float x, float y);
+  void SetPos(int x, int y);
 
   void Scale(float factor);
 
@@ -56,17 +59,22 @@ class Entity {
   void UpdatePowerPos();
   void UpdateHealthStatus();
 
+  const TextureLoader& texture_loader_;
+
   EntityProperties entity_properties_;
 
-  float x_{0.f};
-  float y_{0.f};
+  int x_{0};
+  int y_{0};
 
   PlayerIdType player_id_{no_player};
 
   inline static int initial_order = 0;
   int order_{0};
+  bool flip_{false};
 
+  TextureKey texture_key_;
   std::unique_ptr<Texture> texture_;
+  std::unique_ptr<Texture> texture_backup_;
   std::unique_ptr<Text> health_text_;
   std::unique_ptr<Text> power_text_;
 };

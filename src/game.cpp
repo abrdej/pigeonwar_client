@@ -256,6 +256,12 @@ void Game::OnAnimation(const MessageType& message) {
     IndexType target_index = message[2];
     animations_.emplace_back(
         std::make_unique<ShotAnimation>(texture_loader_, source_index, target_index));
+
+  } else if (animation == "blow_the_ax") {
+    EntityIdType entity_id = message[1];
+    IndexType target_index = message[2];
+    animations_.emplace_back(
+        std::make_unique<BlowTheAxAnimation>(entities_collection_.Get(entity_id), target_index));
   }
 }
 
