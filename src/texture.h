@@ -22,7 +22,7 @@ class Texture {
   SDL_Rect rect_;
   SDL_FPoint anchor_{0.f, 0.f};
   SDL_Point center_{0, 0};
-  SDL_Texture *texture_;
+  SDL_Texture *texture_{nullptr};
   bool flipped_{false};
   float scaling_factor_{1.f};
   std::uint8_t transparency_{255};
