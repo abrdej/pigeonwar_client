@@ -19,11 +19,11 @@ Color GetHealthBackgroundColorForPlayer(PlayerIdType player_id) {
 }
 
 Entity::Entity(Renderer renderer, const TextureLoader& texture_loader, const EntityProperties& entity_properties)
-    : entity_properties_(entity_properties) {
+    : texture_loader_(texture_loader), entity_properties_(entity_properties), texture_key_(entity_properties.name) {
 // 1. Set fields
 
 // 2. Create sprite: set pos and texture key
-  texture_ = std::make_unique<Texture>(texture_loader.GetTexture(entity_properties.name));
+  texture_ = std::make_unique<Texture>(texture_loader_.GetTexture(texture_key_));
   std::tie(x_, y_) = IndexToPos(entity_properties.index);
   texture_->SetAnchor(0.5f, 0.5f);
   texture_->SetPos(x_, y_);
@@ -73,6 +73,7 @@ void Entity::SetPlayer(PlayerIdType player_id) {
 }
 
 void Entity::Flip(bool flip) {
+  flip_ = flip;
   texture_->Flip(flip);
 }
 
@@ -85,7 +86,23 @@ void Entity::ChangeHealth(HealthType change_amount) {
   UpdateHealthStatus();
 }
 
-std::pair<float, float> Entity::GetPos() const {
+void Entity::ChangeTexture(TextureKey texture_key) {
+  texture_backup_ = std::move(texture_);
+  texture_key_ = std::move(texture_key);
+  texture_ = std::make_unique<Texture>(texture_loader_.GetTexture(texture_key_));
+  texture_->SetAnchor(0.5f, 0.5f);
+  texture_->SetPos(x_, y_);
+  texture_->Flip(flip_);
+}
+
+void Entity::RevertTexture() {
+  texture_ = std::move(texture_backup_);
+  texture_->SetAnchor(0.5f, 0.5f);
+  texture_->SetPos(x_, y_);
+  texture_->Flip(flip_);
+}
+
+std::pair<int, int> Entity::GetPos() const {
   return {x_, y_};
 }
 
@@ -93,7 +110,7 @@ EntityProperties Entity::GetProperties() const {
   return entity_properties_;
 }
 
-void Entity::SetPos(float x, float y) {
+void Entity::SetPos(int x, int y) {
   x_ = x;
   y_ = y;
   texture_->SetPos(x_, y_);

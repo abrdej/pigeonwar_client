@@ -73,4 +73,6 @@ void LoadResources(TextureLoader& texture_loader) {
 //  effects
   texture_loader.LoadTexture("bullet");
   texture_loader.LoadTexture("bum");
+
+  texture_loader.LoadTexture("destroyer_attack");
 }

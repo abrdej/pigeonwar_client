@@ -7,13 +7,20 @@
 #include <chrono>
 #include <cstdint>
 #include <iostream>
+#include <list>
 
 inline double Distance(int from_x, int from_y, int to_x, int to_y) {
   return std::sqrt(std::pow(from_x - to_x, 2) + std::pow(from_y - to_y, 2));
 }
 
+struct AnimationInterface : UpdatableInterface, DrawableInterface {};
+
+struct DummyDrawAnimation : AnimationInterface {
+  void Draw(Window& window) const final {}
+};
+
 template <typename T, bool flip, bool bring_to_top>
-class MoveTo {
+class MoveTo : public DummyDrawAnimation {
  public:
   MoveTo(T& movable, int x, int y, float speed)
       : movable_(movable), target_x_(x), target_y_(y), speed_(speed) {
@@ -31,7 +38,7 @@ class MoveTo {
     delta_y_ = delta_y_ / distance;
   }
 
-  bool Update(std::chrono::milliseconds delta_time) {
+  bool Update(std::chrono::milliseconds delta_time) override {
     auto [x, y] = movable_.GetPos();
 
     auto movement_x = speed_ * delta_x_ * static_cast<float>(delta_time.count());
@@ -56,7 +63,7 @@ class MoveTo {
 };
 
 template <typename T, bool flip, bool bring_to_top>
-class MoveBy {
+class MoveBy : public DummyDrawAnimation {
  public:
   MoveBy(T& movable, int delta_x, int delta_y, float speed)
       : movable_(movable),
@@ -73,7 +80,7 @@ class MoveBy {
     }
   }
 
-  bool Update(std::chrono::milliseconds delta_time) {
+  bool Update(std::chrono::milliseconds delta_time) override {
     auto [x, y] = movable_.GetPos();
     auto new_x = x + speed_x_ * static_cast<float>(delta_time.count());
     auto new_y = y + speed_y_ * static_cast<float>(delta_time.count());
@@ -95,10 +102,84 @@ class MoveBy {
   float speed_y_{0.f};
 };
 
-struct AnimationInterface : UpdatableInterface, DrawableInterface {};
+class QueuedAnimation : public AnimationInterface {
+ public:
+  bool Update(std::chrono::milliseconds delta_time) override;
+  void Draw(Window& window) const override;
 
-struct DummyDrawAnimation : AnimationInterface {
-  void Draw(Window& window) const final {}
+ protected:
+  void PushBack(std::unique_ptr<AnimationInterface> animation);
+  void PushFront(std::unique_ptr<AnimationInterface> animation);
+
+ private:
+  std::list<std::unique_ptr<AnimationInterface>> animation_queue_;
+};
+
+class QueuedFactoryAnimation : public AnimationInterface {
+ public:
+  bool Update(std::chrono::milliseconds delta_time) override;
+  void Draw(Window& window) const override;
+
+ protected:
+  using AnimationFactory = std::function<std::unique_ptr<AnimationInterface>()>;
+
+  void ScheduleBack(AnimationFactory animation_factory);
+  void ScheduleFront(AnimationFactory animation_factory);
+
+ private:
+  std::unique_ptr<AnimationInterface> current_animation_;
+  std::list<AnimationFactory> factories_queue_;
+};
+
+class ShowTexture : public AnimationInterface {
+ public:
+  ShowTexture(const Texture& texture, std::chrono::milliseconds duration_ms, int x, int y)
+      : texture_(texture), duration_ms_(duration_ms) {
+    texture_.SetAnchor(0.5f, 0.5f);
+    texture_.SetPos(x, y);
+  }
+
+  bool Update(std::chrono::milliseconds delta_time) override {
+    if (!keep_until_) {
+      keep_until_ = std::chrono::steady_clock::now() + duration_ms_;
+    }
+    return std::chrono::steady_clock::now() >= *keep_until_;
+  }
+
+  void Draw(Window& window) const override {
+    texture_.Draw(window);
+  }
+
+ private:
+  Texture texture_;
+  std::chrono::milliseconds duration_ms_;
+  std::optional<std::chrono::steady_clock::time_point> keep_until_;
+};
+
+class FlushTexture : public DummyDrawAnimation {
+ public:
+  FlushTexture(Entity& entity, TextureKey texture, std::chrono::milliseconds duration_ms)
+      : entity_(entity), texture_(std::move(texture)), duration_ms_(duration_ms) {
+  }
+
+  bool Update(std::chrono::milliseconds delta_time) override {
+    if (!keep_until_) {
+      keep_until_ = std::chrono::steady_clock::now() + duration_ms_;
+      entity_.ChangeTexture(texture_);
+    }
+    if (std::chrono::steady_clock::now() >= *keep_until_) {
+      entity_.RevertTexture();
+      return true;
+    }
+    return false;
+  }
+
+ private:
+  Entity& entity_;
+  TextureKey texture_;
+  TextureKey texture_backup_;
+  std::chrono::milliseconds duration_ms_;
+  std::optional<std::chrono::steady_clock::time_point> keep_until_;
 };
 
 class MoveAnimation : public DummyDrawAnimation {
@@ -137,8 +218,8 @@ class ShotBaseAnimation : public AnimationInterface {
                     IndexType source_index,
                     IndexType target_index,
                     float speed,
-                    const std::string& bullet_key,
-                    const std::optional<std::string>& explosion_key = std::nullopt,
+                    const TextureKey& bullet_key,
+                    const std::optional<TextureKey>& explosion_key = std::nullopt,
                     const std::optional<std::chrono::milliseconds>& explosion_duration = std::nullopt);
   bool Update(std::chrono::milliseconds delta_time) override;
   void Draw(Window& window) const override;
@@ -151,10 +232,34 @@ class ShotBaseAnimation : public AnimationInterface {
   std::chrono::steady_clock::time_point explode_until_;
 };
 
+class MoveAndReturnBaseAnimation : public QueuedFactoryAnimation {
+  using MoveToT = MoveTo<Entity, true, true>;
+
+ public:
+  MoveAndReturnBaseAnimation(Entity& entity,
+                             IndexType target_index,
+                             float speed,
+                             const std::optional<IndexType>& return_index = std::nullopt,
+                             const std::optional<TextureKey>& flush_key = std::nullopt,
+                             const std::optional<TextureKey>& moving_key = std::nullopt);
+
+ private:
+  Entity& entity_;
+  IndexType target_index_;
+  float speed_{0.01f};
+};
+
 struct ShotAnimation : ShotBaseAnimation {
   ShotAnimation(TextureLoader& texture_loader,
                 IndexType source_index,
                 IndexType target_index);
+};
+
+struct BlowTheAxAnimation : MoveAndReturnBaseAnimation {
+  BlowTheAxAnimation(Entity& entity,
+                     IndexType target_index)
+      : MoveAndReturnBaseAnimation(entity, target_index, 0.01f, std::nullopt, "destroyer_attack") {
+  }
 };
 
 struct ScaleAnimation {
