@@ -40,11 +40,11 @@ class Entity {
 
   void RevertTexture();
 
-  std::pair<int, int> GetPos() const;
+  std::pair<float, float> GetPos() const;
 
   EntityProperties GetProperties() const;
 
-  void SetPos(int x, int y);
+  void SetPos(float x, float y);
 
   void Scale(float factor);
 
@@ -63,8 +63,8 @@ class Entity {
 
   EntityProperties entity_properties_;
 
-  int x_{0};
-  int y_{0};
+  float x_{0.f};
+  float y_{0.f};
 
   PlayerIdType player_id_{no_player};
 
