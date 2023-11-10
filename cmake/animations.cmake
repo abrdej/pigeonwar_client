@@ -1,0 +1,8 @@
+function(add_animations name)
+  file(GLOB _animations_sources "${CMAKE_CURRENT_SOURCE_DIR}/${name}/*.cpp")
+  if(_animations_sources)
+    add_library(${name}_animations SHARED ${_animations_sources})
+    target_include_directories(${name}_animations PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+    target_link_libraries(${name}_animations PRIVATE animations)
+  endif()
+endfunction()

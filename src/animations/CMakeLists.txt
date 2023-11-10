@@ -5,51 +5,12 @@ target_link_libraries(animations PUBLIC
   pigeon_war_lib
 )
 
-add_library(common_animations SHARED
-  common/common.cpp
-)
-target_link_libraries(common_animations PRIVATE
-  animations
-)
+include(${CMAKE_SOURCE_DIR}/cmake/animations.cmake)
 
-add_library(shooter_animations SHARED
-  shooter/shooter.cpp
-)
-target_link_libraries(shooter_animations PRIVATE
-  animations
-)
-
-add_library(destroyer_animations SHARED
-  destroyer/destroyer.cpp
-)
-target_link_libraries(destroyer_animations PRIVATE
-  animations
-)
-
-add_library(native_animations SHARED
-  native/native.cpp
-)
-target_link_libraries(native_animations PRIVATE
-  animations
-)
-
-add_library(sniper_animations SHARED
-  sniper/sniper.cpp
-)
-target_link_libraries(sniper_animations PRIVATE
-  animations
-)
-
-add_library(poisoner_animations SHARED
-  poisoner/poisoner.cpp
-)
-target_link_libraries(poisoner_animations PRIVATE
-  animations
-)
-
-add_library(samurai_animations SHARED
-  samurai/samurai.cpp
-)
-target_link_libraries(samurai_animations PRIVATE
-  animations
-)
+add_animations(common SHARED)
+add_animations(shooter SHARED)
+add_animations(destroyer SHARED)
+add_animations(native SHARED)
+add_animations(sniper SHARED)
+add_animations(poisoner SHARED)
+add_animations(samurai SHARED)
