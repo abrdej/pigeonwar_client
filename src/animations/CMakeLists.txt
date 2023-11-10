@@ -39,3 +39,10 @@ add_library(sniper_animations SHARED
 target_link_libraries(sniper_animations PRIVATE
   animations
 )
+
+add_library(poisoner_animations SHARED
+  poisoner/poisoner.cpp
+)
+target_link_libraries(poisoner_animations PRIVATE
+  animations
+)
