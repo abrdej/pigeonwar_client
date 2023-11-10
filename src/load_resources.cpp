@@ -82,6 +82,10 @@ void LoadResources(TextureLoader& texture_loader) {
   texture_loader.LoadTexture("samurai_sword_blow");
   texture_loader.LoadTexture("samurai_dodge");
   texture_loader.LoadTexture("saberhand_transparency");
+  texture_loader.LoadTexture("monk_use_1");
+  texture_loader.LoadTexture("monk_use_2");
+  texture_loader.LoadTexture("monk_use_3");
+  texture_loader.LoadTexture("magic_splash");
 
   texture_loader.LoadTexture("destroyer_attack");
 }
