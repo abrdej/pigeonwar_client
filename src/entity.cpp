@@ -99,10 +99,12 @@ void Entity::ChangeTexture(TextureKey texture_key) {
 }
 
 void Entity::RevertTexture() {
-  texture_ = std::move(texture_backup_);
-  texture_->SetAnchor(0.5f, 0.5f);
-  texture_->SetPos(static_cast<int>(x_), static_cast<int>(y_));
-  texture_->Flip(flip_);
+  if (texture_backup_) {
+    texture_ = std::move(texture_backup_);
+    texture_->SetAnchor(0.5f, 0.5f);
+    texture_->SetPos(static_cast<int>(x_), static_cast<int>(y_));
+    texture_->Flip(flip_);
+  }
 }
 
 std::pair<float, float> Entity::GetPos() const {

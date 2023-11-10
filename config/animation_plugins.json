@@ -5,5 +5,6 @@
   "src/animations/libnative_animations.so",
   "src/animations/libsniper_animations.so",
   "src/animations/libpoisoner_animations.so",
-  "src/animations/libsamurai_animations.so"
+  "src/animations/libsamurai_animations.so",
+  "src/animations/libsaberhand_animations.so"
 ]
