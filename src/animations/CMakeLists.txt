@@ -32,3 +32,10 @@ add_library(native_animations SHARED
 target_link_libraries(native_animations PRIVATE
   animations
 )
+
+add_library(sniper_animations SHARED
+  sniper/sniper.cpp
+)
+target_link_libraries(sniper_animations PRIVATE
+  animations
+)
