@@ -32,10 +32,11 @@ class Entity {
 
   void ChangeHealth(HealthType change_amount);
 
+  void ChangePower(PowerType change_amount);
+
 //  void SetHealth(std::int32_t health);
 //  void ChangeHealth(std::int32_t amount);
 //  void SetPower(std::int32_t power);
-//  void ChangePower(std::int32_t amount);
 //  void SetColorForHealth();
 //  void SetPosition(std::int32_t x, std::int32_t y);
 

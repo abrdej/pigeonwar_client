@@ -87,6 +87,55 @@ void ChangeHealthAnimation::Draw(Window& window) const {
   }
 }
 
+class ChangePowerAnimation : public AnimationInterface {
+  using MoveByT = MoveBy<Text, false, false>;
+ public:
+  explicit ChangePowerAnimation(Renderer renderer, Entity& entity, PowerType change_amount);
+  bool Update(std::chrono::milliseconds delta_time) override;
+  void Draw(Window& window) const override;
+
+  static constexpr auto name = "change_power";
+
+ private:
+  Renderer renderer_;
+  std::unique_ptr<MoveByT> move_by_;
+  Entity& entity_;
+  PowerType change_amount_;
+  Color color_;
+  std::unique_ptr<Text> text_;
+};
+
+ChangePowerAnimation::ChangePowerAnimation(Renderer renderer, Entity& entity, HealthType change_amount)
+    : renderer_(renderer), entity_(entity), change_amount_(change_amount),
+      color_({25, 32, 155, 255}) {
+
+  auto [x, y] = entity.GetPos();
+  text_ = std::make_unique<Text>(renderer_, 32); // TODO: Parametrize size
+  text_->SetText(std::to_string(change_amount_));
+  text_->SetAnchor(0.5, 1.0);
+  text_->SetPos(x, y);
+  text_->SetColor(color_);
+
+  // TODO: speed here is not ok
+  move_by_ = std::make_unique<MoveByT>(*text_, 0, -25, 0.00001f);
+}
+
+bool ChangePowerAnimation::Update(std::chrono::milliseconds delta_time) {
+  if (move_by_->Update(delta_time)) {
+    entity_.ChangeHealth(change_amount_);
+    move_by_ = nullptr;
+    text_ = nullptr;
+    return true;
+  }
+  return false;
+}
+
+void ChangePowerAnimation::Draw(Window& window) const {
+  if (text_) {
+    text_->Draw(window);
+  }
+}
+
 template <>
 AnimationInterfacePtr AnimationTranslator<MoveAnimation>(GameHandler& game_handler, const DataType& data) {
   game_handler.ClearSelectedIndex();
@@ -104,6 +153,18 @@ AnimationInterfacePtr AnimationTranslator<ChangeHealthAnimation>(GameHandler& ga
                                                  change_amount);
 }
 
-using CommonAnimationsProvider = AnimationsPluginProvider<MoveAnimation, ChangeHealthAnimation>;
+template <>
+AnimationInterfacePtr AnimationTranslator<ChangePowerAnimation>(GameHandler& game_handler, const DataType& data) {
+  EntityIdType entity_id = data[1];
+  HealthType change_amount = data[2];
+  if (change_amount == 0) {
+    return nullptr;
+  }
+  return std::make_unique<ChangePowerAnimation>(game_handler.GetRenderer(),
+                                                game_handler.GetEntitiesCollection().Get(entity_id),
+                                                change_amount);
+}
+
+using CommonAnimationsProvider = AnimationsPluginProvider<MoveAnimation, ChangeHealthAnimation, ChangePowerAnimation>;
 
 BOOST_DLL_ALIAS(CreateAnimationProvider<CommonAnimationsProvider>, animation_plugin_provider)

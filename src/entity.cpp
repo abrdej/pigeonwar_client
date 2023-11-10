@@ -89,6 +89,10 @@ void Entity::ChangeHealth(HealthType change_amount) {
   UpdateHealthStatus();
 }
 
+void Entity::ChangePower(PowerType change_amount) {
+  entity_properties_.power += change_amount;
+}
+
 void Entity::ChangeTexture(TextureKey texture_key) {
   texture_backup_ = std::move(texture_);
   texture_key_ = std::move(texture_key);

@@ -69,6 +69,7 @@ Game::Game()
   message_processor_.OnMessage(remove_entity_message, [this](const auto& message) {
     EntityIdType entity_id = message;
     entities_collection_.Remove(entity_id);
+    
   });
   message_processor_.OnMessage(move_entity_message, [this](const auto& message) {
     IndexType to_index = message["to_index"];
@@ -233,7 +234,10 @@ void Game::OnGlobalState(const MessageType& message) {
 
 void Game::OnAnimation(const MessageType& message) {
   try {
-    animations_.emplace_back(animation_factory_.Create(message));
+    auto animation = animation_factory_.Create(message);
+    if (animation) {
+      animations_.push_back(std::move(animation));
+    }
   } catch (std::out_of_range&) {
     std::cerr << "There is no handler for animation: " << message[0] << "\n";
   }
