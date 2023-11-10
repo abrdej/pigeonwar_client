@@ -1,8 +1,7 @@
 #pragma once
 
-#include <drawable.h>
+#include <animation_interface.h>
 #include <entity.h>
-#include <updatable.h>
 
 #include <chrono>
 #include <cstdint>
@@ -13,10 +12,19 @@ inline double Distance(int from_x, int from_y, int to_x, int to_y) {
   return std::sqrt(std::pow(from_x - to_x, 2) + std::pow(from_y - to_y, 2));
 }
 
-struct AnimationInterface : UpdatableInterface, DrawableInterface {};
+class FunctionWrappedAnimation : public DummyDrawAnimation {
+ public:
+  using Function = std::function<bool()>;
 
-struct DummyDrawAnimation : AnimationInterface {
-  void Draw(Window& window) const final {}
+  explicit FunctionWrappedAnimation(Function f) : f_(std::move(f)) {}
+
+  bool Update(std::chrono::milliseconds delta_time) override {
+    return f_();
+  }
+
+ private:
+
+  Function  f_;
 };
 
 template <typename T, bool flip, bool bring_to_top>
@@ -182,35 +190,6 @@ class FlushTexture : public DummyDrawAnimation {
   std::optional<std::chrono::steady_clock::time_point> keep_until_;
 };
 
-class MoveAnimation : public DummyDrawAnimation {
-  using MoveToT = MoveTo<Entity, true, true>;
- public:
-  explicit MoveAnimation(Entity& entity, IndexType target_index);
-  bool Update(std::chrono::milliseconds delta_time) override;
-
- private:
-  Entity& entity_;
-  IndexType target_index_;
-  std::unique_ptr<MoveToT> move_to_;
-  float speed_{0.01f};
-};
-
-class ChangeHealthAnimation : public AnimationInterface {
-  using MoveByT = MoveBy<Text, false, false>;
- public:
-  explicit ChangeHealthAnimation(Renderer renderer, Entity& entity, HealthType change_amount);
-  bool Update(std::chrono::milliseconds delta_time) override;
-  void Draw(Window& window) const override;
-
- private:
-  Renderer renderer_;
-  std::unique_ptr<MoveByT> move_by_;
-  Entity& entity_;
-  HealthType change_amount_;
-  Color color_;
-  std::unique_ptr<Text> text_;
-};
-
 class ShotBaseAnimation : public AnimationInterface {
   using MoveToT = MoveTo<Texture, true, false>;
  public:
@@ -247,19 +226,6 @@ class MoveAndReturnBaseAnimation : public QueuedFactoryAnimation {
   Entity& entity_;
   IndexType target_index_;
   float speed_{0.01f};
-};
-
-struct ShotAnimation : ShotBaseAnimation {
-  ShotAnimation(TextureLoader& texture_loader,
-                IndexType source_index,
-                IndexType target_index);
-};
-
-struct BlowTheAxAnimation : MoveAndReturnBaseAnimation {
-  BlowTheAxAnimation(Entity& entity,
-                     IndexType target_index)
-      : MoveAndReturnBaseAnimation(entity, target_index, 0.01f, std::nullopt, "destroyer_attack") {
-  }
 };
 
 struct ScaleAnimation {

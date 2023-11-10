@@ -28,6 +28,9 @@ Game::Game()
     : entities_collection_(window_, texture_loader_) {
   LoadResources(texture_loader_);
 
+  game_handler_ = std::make_unique<GameHandlerImpl>(*this);
+  animation_factory_.LoadAnimations(*game_handler_);
+
   board_ = std::make_unique<Board>(texture_loader_, 15, 10);
   panel_ = std::make_unique<Panel>(window_.GetRenderer(), texture_loader_, 150, 10 * 60, 4, 5);
   panel_->OnIn([this](auto button_id) { return OnGetHint(button_id); });
@@ -202,13 +205,6 @@ void Game::Update(std::chrono::milliseconds delta_time) {
                                    [delta_time](auto& x) {
                                      return x->Update(delta_time);
                                    }), std::end(animations_));
-
-  if (scale_animation_ && scale_animation_->Update(delta_time)) {
-    scale_animation_ = nullptr;
-  }
-  if (transparency_animation_ && transparency_animation_->Update(delta_time)) {
-    transparency_animation_ = nullptr;
-  }
   ProcessCallbacks();
 }
 
@@ -236,32 +232,10 @@ void Game::OnGlobalState(const MessageType& message) {
 }
 
 void Game::OnAnimation(const MessageType& message) {
-  std::string animation = message[0];
-  if (animation == "move") {
-    ClearSelectedIndex();
-
-    EntityIdType entity_id = message[1];
-    IndexType index = message[2];
-    animations_.emplace_back(
-        std::make_unique<MoveAnimation>(entities_collection_.Get(entity_id), index));
-
-  } else if (animation == "change_health") {
-    EntityIdType entity_id = message[1];
-    HealthType change_amount = message[2];
-    animations_.emplace_back(
-        std::make_unique<ChangeHealthAnimation>(window_.GetRenderer(),
-                                                entities_collection_.Get(entity_id), change_amount));
-  } else if (animation == "shoot") {
-    IndexType source_index = message[1];
-    IndexType target_index = message[2];
-    animations_.emplace_back(
-        std::make_unique<ShotAnimation>(texture_loader_, source_index, target_index));
-
-  } else if (animation == "blow_the_ax") {
-    EntityIdType entity_id = message[1];
-    IndexType target_index = message[2];
-    animations_.emplace_back(
-        std::make_unique<BlowTheAxAnimation>(entities_collection_.Get(entity_id), target_index));
+  try {
+    animations_.emplace_back(animation_factory_.Create(message));
+  } catch (std::out_of_range&) {
+    std::cerr << "There is no handler for animation: " << message[0] << "\n";
   }
 }
 

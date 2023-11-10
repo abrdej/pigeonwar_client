@@ -4,6 +4,7 @@
 #include <window.h>
 
 #include <map>
+#include <algorithm>
 
 EntitiesCollection::EntitiesCollection(const Window& window, const TextureLoader& texture_loader)
     : window_(window), texture_loader_(texture_loader) {
@@ -12,7 +13,9 @@ EntitiesCollection::EntitiesCollection(const Window& window, const TextureLoader
 void EntitiesCollection::Add(EntityIdType entity_id, const EntityProperties& entity_properties) {
   entities_.emplace(std::piecewise_construct,
                     std::forward_as_tuple(entity_id),
-                    std::forward_as_tuple(window_.GetRenderer(), texture_loader_, entity_properties));
+                    std::forward_as_tuple(window_.GetRenderer(), texture_loader_,
+                                          [entity_id, this]() { BringToTop(entity_id); }, entity_properties));
+  ordering_.push_back(entity_id);
 }
 
 Entity& EntitiesCollection::Get(EntityIdType entity_id) {
@@ -41,21 +44,27 @@ std::optional<EntityProperties> EntitiesCollection::EntityPropertiesForIndex(Ind
 }
 
 void EntitiesCollection::Remove(EntityIdType entity_id) {
+  ordering_.erase(std::remove(std::begin(ordering_), std::end(ordering_), entity_id),  std::end(ordering_));
   entities_.erase(entity_id);
 }
 
 void EntitiesCollection::Draw(Window& window) {
-  std::vector<Entity*> sorted_entities;
-  sorted_entities.reserve(entities_.size());
-  for (auto& [entity_id, entity] : entities_) {
-    sorted_entities.emplace_back(&entity);
+//  std::vector<Entity*> sorted_entities;
+//  sorted_entities.reserve(entities_.size());
+//  for (auto& [entity_id, entity] : entities_) {
+//    sorted_entities.emplace_back(&entity);
+//  }
+//  std::sort(std::begin(sorted_entities), std::end(sorted_entities), [](const auto e1, const auto e2) {
+//    return e1->GetOrder() < e2->GetOrder();
+//  });
+
+  for (auto entity_id : ordering_) {
+    entities_.at(entity_id).Draw(window);
   }
-  std::sort(std::begin(sorted_entities), std::end(sorted_entities), [](const auto e1, const auto e2) {
-    return e1->GetOrder() < e2->GetOrder();
-  });
-  for (const auto& entity : sorted_entities) {
-    entity->Draw(window);
-  }
+
+//  for (const auto& entity : sorted_entities) {
+//    entity->Draw(window);
+//  }
 }
 
 void EntitiesCollection::SortEntitiesOrder() {
@@ -64,13 +73,18 @@ void EntitiesCollection::SortEntitiesOrder() {
     sorted_entities[entity.GetProperties().index].push_back(entity_id);
   }
   for (auto& [index, entities] : sorted_entities) {
-    std::sort(std::begin(entities), std::end(entities), [this](const EntityIdType& e1, const EntityIdType& e2) {
-      return Get(e1).GetOrder() < Get(e2).GetOrder();
-    });
+//    std::sort(std::begin(entities), std::end(entities), [this](const EntityIdType& e1, const EntityIdType& e2) {
+//      return Get(e1).GetOrder() < Get(e2).GetOrder();
+//    });
     for (auto entity_id : entities) {
-      Get(entity_id).BringToTop();
+      ordering_.push_back(entity_id);
     }
   }
+}
+
+void EntitiesCollection::BringToTop(EntityIdType entity_id) {
+  ordering_.erase(std::find(ordering_.begin(), ordering_.end(), entity_id));
+  ordering_.push_back(entity_id);
 }
 
 void EntitiesCollection::ThrowEntityIdNotExists(EntityIdType entity_id) {

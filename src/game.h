@@ -4,7 +4,8 @@
 #include <queue>
 #include <memory>
 
-#include <animation.h>
+#include <animations/animation.h>
+#include <animation_factory.h>
 #include <board.h>
 #include <entities_collection.h>
 #include <game_state.h>
@@ -67,10 +68,35 @@ class Game {
   std::optional<TimerOnUpdate> talk_timer_;
   std::queue<std::function<void()>> callbacks_;
 
+  AnimationFactory animation_factory_;
   std::vector<std::unique_ptr<AnimationInterface>> animations_;
 
   std::unique_ptr<ScaleAnimation> scale_animation_;
   std::unique_ptr<TransparencyAnimation> transparency_animation_;
 
   WebsocketClient client_;
+
+  struct GameHandlerImpl : GameHandler {
+    explicit GameHandlerImpl(Game& game) : game_(game) {}
+
+    TextureLoader& GetTextureLoader() override {
+      return game_.texture_loader_;
+    }
+
+    EntitiesCollection& GetEntitiesCollection() override {
+      return game_.entities_collection_;
+    }
+
+    void ClearSelectedIndex() override {
+      game_.ClearSelectedIndex();
+    }
+
+    Renderer GetRenderer() override {
+      return game_.window_.GetRenderer();
+    }
+
+    Game& game_;
+  };
+
+  std::unique_ptr<GameHandlerImpl> game_handler_;
 };

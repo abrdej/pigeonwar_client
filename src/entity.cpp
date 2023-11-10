@@ -18,8 +18,10 @@ Color GetHealthBackgroundColorForPlayer(PlayerIdType player_id) {
   }
 }
 
-Entity::Entity(Renderer renderer, const TextureLoader& texture_loader, const EntityProperties& entity_properties)
-    : texture_loader_(texture_loader), entity_properties_(entity_properties), texture_key_(entity_properties.name) {
+Entity::Entity(Renderer renderer, const TextureLoader& texture_loader, BringToTopCallback bring_to_top_callback,
+               const EntityProperties& entity_properties)
+    : texture_loader_(texture_loader), bring_to_top_callback_(std::move(bring_to_top_callback)),
+      entity_properties_(entity_properties), texture_key_(entity_properties.name) {
 // 1. Set fields
 
 // 2. Create sprite: set pos and texture key
@@ -78,7 +80,8 @@ void Entity::Flip(bool flip) {
 }
 
 void Entity::BringToTop() {
-  order_ = ++initial_order;
+  //order_ = ++initial_order;
+  bring_to_top_callback_();
 }
 
 void Entity::ChangeHealth(HealthType change_amount) {
@@ -130,9 +133,9 @@ std::string Entity::GetName() const {
   return entity_properties_.name;
 }
 
-int Entity::GetOrder() const {
-  return order_;
-}
+//int Entity::GetOrder() const {
+//  return order_;
+//}
 
 void Entity::UpdateHealthPos() {
   if (health_text_) {
