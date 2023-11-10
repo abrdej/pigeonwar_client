@@ -25,3 +25,10 @@ add_library(destroyer_animations SHARED
 target_link_libraries(destroyer_animations PRIVATE
   animations
 )
+
+add_library(native_animations SHARED
+  native/native.cpp
+)
+target_link_libraries(native_animations PRIVATE
+  animations
+)
