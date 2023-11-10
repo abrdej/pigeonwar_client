@@ -3,6 +3,8 @@
 #include <texture_loader.h>
 
 void LoadResources(TextureLoader& texture_loader) {
+  // TODO: maybe load those from some file or directory
+
 // entities
   texture_loader.LoadTexture("destroyer");
   texture_loader.LoadTexture("golem");
@@ -76,6 +78,7 @@ void LoadResources(TextureLoader& texture_loader) {
   texture_loader.LoadTexture("detonation");
   texture_loader.LoadTexture("native_attack");
   texture_loader.LoadTexture("sniper_bullet_explosion");
+  texture_loader.LoadTexture("poisoned_missile_explosion");
 
   texture_loader.LoadTexture("destroyer_attack");
 }
