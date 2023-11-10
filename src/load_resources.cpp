@@ -74,6 +74,7 @@ void LoadResources(TextureLoader& texture_loader) {
   texture_loader.LoadTexture("bullet");
   texture_loader.LoadTexture("bum");
   texture_loader.LoadTexture("detonation");
+  texture_loader.LoadTexture("native_attack");
 
   texture_loader.LoadTexture("destroyer_attack");
 }
