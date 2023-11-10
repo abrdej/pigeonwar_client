@@ -2,5 +2,6 @@
   "src/animations/libcommon_animations.so",
   "src/animations/libshooter_animations.so",
   "src/animations/libdestroyer_animations.so",
-  "src/animations/libnative_animations.so"
+  "src/animations/libnative_animations.so",
+  "src/animations/libsniper_animations.so"
 ]
