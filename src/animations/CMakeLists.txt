@@ -46,3 +46,10 @@ add_library(poisoner_animations SHARED
 target_link_libraries(poisoner_animations PRIVATE
   animations
 )
+
+add_library(samurai_animations SHARED
+  samurai/samurai.cpp
+)
+target_link_libraries(samurai_animations PRIVATE
+  animations
+)

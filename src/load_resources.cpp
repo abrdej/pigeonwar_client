@@ -79,6 +79,8 @@ void LoadResources(TextureLoader& texture_loader) {
   texture_loader.LoadTexture("native_attack");
   texture_loader.LoadTexture("sniper_bullet_explosion");
   texture_loader.LoadTexture("poisoned_missile_explosion");
+  texture_loader.LoadTexture("samurai_sword_blow");
+  texture_loader.LoadTexture("samurai_dodge");
 
   texture_loader.LoadTexture("destroyer_attack");
 }
