@@ -3,3 +3,4 @@
 #include <string>
 
 static const std::string resources_directory = "@CMAKE_SOURCE_DIR@/res/";
+static const std::string config_directory = "@CMAKE_SOURCE_DIR@/config/";

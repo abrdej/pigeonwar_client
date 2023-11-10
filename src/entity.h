@@ -9,13 +9,16 @@
 #include <texture.h>
 #include <texture_loader.h>
 
+using BringToTopCallback = std::function<void()>;
+
 class Entity {
  public:
-  Entity(Renderer renderer, const TextureLoader& texture_loader, const EntityProperties& entity_properties);
+  Entity(Renderer renderer, const TextureLoader& texture_loader, BringToTopCallback bring_to_top_callback,
+         const EntityProperties& entity_properties);
   Entity(const Entity&) = delete;
-  Entity(Entity&&) = default;
+  Entity(Entity&&) = delete;
   Entity& operator=(const Entity&) = delete;
-  Entity& operator=(Entity&&) = default;
+  Entity& operator=(Entity&&) = delete;
 
   void Draw(Window& window);
 
@@ -52,7 +55,7 @@ class Entity {
 
   [[nodiscard]] std::string GetName() const;
 
-  int GetOrder() const;
+  //int GetOrder() const;
 
  private:
   void UpdateHealthPos();
@@ -60,6 +63,7 @@ class Entity {
   void UpdateHealthStatus();
 
   const TextureLoader& texture_loader_;
+  BringToTopCallback bring_to_top_callback_;
 
   EntityProperties entity_properties_;
 

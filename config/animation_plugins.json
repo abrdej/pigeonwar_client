@@ -1,0 +1,5 @@
+[
+  "src/animations/libcommon_animations.so",
+  "src/animations/libshooter_animations.so",
+  "src/animations/libdestroyer_animations.so"
+]

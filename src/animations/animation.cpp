@@ -1,6 +1,6 @@
-#include <animation.h>
+#include "animation.h"
 
-#include <utils.h>
+#include "utils.h"
 
 namespace {
 
@@ -71,51 +71,6 @@ void QueuedFactoryAnimation::ScheduleFront(AnimationFactory animation_factory) {
   factories_queue_.emplace_front(std::move(animation_factory));
 }
 
-MoveAnimation::MoveAnimation(Entity& entity, IndexType target_index)
-    : entity_(entity), target_index_(target_index) {
-  auto [x, y] = IndexToPos(target_index_);
-  move_to_ = std::make_unique<MoveToT>(entity, x, y, speed_);
-}
-
-bool MoveAnimation::Update(std::chrono::milliseconds delta_time) {
-  if (move_to_->Update(delta_time)) {
-    entity_.SetIndex(target_index_);
-    return true;
-  }
-  return false;
-}
-
-ChangeHealthAnimation::ChangeHealthAnimation(Renderer renderer, Entity& entity, HealthType change_amount)
-    : renderer_(renderer), entity_(entity), change_amount_(change_amount),
-      color_(change_amount < 0 ? Color{173, 32, 14, 255} : Color{47, 117, 66, 255}) {
-
-  auto [x, y] = entity.GetPos();
-  text_ = std::make_unique<Text>(renderer_, 32); // TODO: Parametrize size
-  text_->SetText(std::to_string(change_amount_));
-  text_->SetAnchor(0.5, 1.0);
-  text_->SetPos(x, y);
-  text_->SetColor(color_);
-
-  // TODO: speed here is not ok
-  move_by_ = std::make_unique<MoveByT>(*text_, 0, -25, 0.00001f);
-}
-
-bool ChangeHealthAnimation::Update(std::chrono::milliseconds delta_time) {
-  if (move_by_->Update(delta_time)) {
-    entity_.ChangeHealth(change_amount_);
-    move_by_ = nullptr;
-    text_ = nullptr;
-    return true;
-  }
-  return false;
-}
-
-void ChangeHealthAnimation::Draw(Window& window) const {
-  if (text_) {
-    text_->Draw(window);
-  }
-}
-
 ShotBaseAnimation::ShotBaseAnimation(
     TextureLoader& texture_loader,
     IndexType source_index,
@@ -180,6 +135,10 @@ MoveAndReturnBaseAnimation::MoveAndReturnBaseAnimation(Entity& entity,
                                                        const std::optional<TextureKey>& moving_key)
     : entity_(entity), target_index_(target_index), speed_(speed) {
 
+  const auto [from_x, from_y] = entity_.GetPos();
+  const auto [target_x, target_y] = IndexToPos(target_index_);
+  const auto flip = static_cast<int>(from_x) - target_x > 0;
+
   ScheduleBack([this]() {
     auto [x, y] = IndexToPos(target_index_);
     return std::make_unique<MoveToT>(entity_, x, y, speed_);
@@ -198,13 +157,14 @@ MoveAndReturnBaseAnimation::MoveAndReturnBaseAnimation(Entity& entity,
     }
     return std::make_unique<MoveToT>(entity_, x_, y_, speed_);
   });
-}
 
-ShotAnimation::ShotAnimation(TextureLoader& texture_loader,
-                             IndexType source_index,
-                             IndexType target_index)
-    : ShotBaseAnimation(texture_loader, source_index, target_index, 0.0175, "bullet", "bum",
-                        std::chrono::milliseconds(150)) {}
+  ScheduleBack([this, flip]() mutable {
+    return std::make_unique<FunctionWrappedAnimation>([this, flip]() {
+      entity_.Flip(flip);
+      return true;
+    });
+  });
+}
 
 void ScaleAnimation::Handle(Entity& entity) {
   entity_ = &entity;

@@ -2,7 +2,7 @@
 
 #include <entity.h>
 
-#include <deque>
+#include <list>
 #include <unordered_map>
 
 class Window;
@@ -20,9 +20,11 @@ class EntitiesCollection {
   void SortEntitiesOrder();
 
  private:
+  void BringToTop(EntityIdType entity_id);
   [[noreturn]] static void ThrowEntityIdNotExists(EntityIdType entity_id);
 
   const Window& window_;
   const TextureLoader& texture_loader_;
+  std::list<EntityIdType> ordering_;
   std::unordered_map<EntityIdType, Entity> entities_;
 };
